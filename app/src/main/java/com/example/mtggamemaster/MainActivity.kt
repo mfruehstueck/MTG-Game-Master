@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mtggamemaster.screens.GameSessionScreen
+import com.example.mtggamemaster.navigation.Navigation
 import com.example.mtggamemaster.ui.theme.MTGGameMasterTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GameSessionScreen()
+                    Navigation(startup = Screens.homescreen)
                 }
             }
         }

@@ -8,14 +8,14 @@ import androidx.navigation.NavController
 import com.example.mtggamemaster.Screens
 
 @Composable
-fun DeckScreen(navController: NavController) {
+fun CardDetailScreen(navController: NavController) {
     BaseScreen(
-        title = "Decks",
+        title = "Card Detail",
         navController = navController,
         content = {innerPadding ->
             Text(
                 modifier = Modifier.padding(innerPadding),
-                text = "${Screens.deckscreen} not implemented yet")
+                text = "${Screens.carddetailscreen} not implemented yet")
         }
     )
 }
