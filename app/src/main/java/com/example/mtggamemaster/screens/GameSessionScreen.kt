@@ -29,10 +29,11 @@ import com.example.mtggamemaster.widgets.PlayerGrid
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameSessionScreen() {
-    val viewModel :PlayersViewModel = viewModel()
+    val viewModel: PlayersViewModel = viewModel()
+    val testingPlayerList = ArrayDeque<Player>(listOf(Player(name = "Manuel", life = 20), Player(name = "Alex", life = 20), Player(name = "Max", life = 20)))
     Scaffold(
             floatingActionButton = {
-                ExtendedFloatingActionButton(onClick = { }) {
+                ExtendedFloatingActionButton(onClick = { viewModel.addPlayer(testingPlayerList.removeFirst()) }) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
                     Text(text = "Add Player")
                 }

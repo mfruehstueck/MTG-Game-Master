@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class PlayersViewModel : ViewModel() {
-    private val _players = MutableStateFlow<List<Player>>(mutableListOf(Player("Alex", life = 40), Player("Manuel", life = 40)))
+    private val _players = MutableStateFlow<List<Player>>(mutableListOf())
     val players: StateFlow<List<Player>> = _players.asStateFlow()
     fun gainLife(playerName: String) {
         _players.update { currentPlayers ->

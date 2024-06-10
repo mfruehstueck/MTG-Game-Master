@@ -2,8 +2,13 @@ package com.example.mtggamemaster.widgets
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +36,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun PlayerGrid(
@@ -54,6 +61,86 @@ fun PlayerGrid(
 }
 
 @Composable
+fun PlayerCard(
+    viewModel: PlayersViewModel,
+    player: Player,
+    onPlusClick: (String) -> Unit = {},
+    onMinusClick: (String) -> Unit = {}
+) {
+    OutlinedCard(
+        modifier = Modifier
+            .padding(5.dp)
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        border = BorderStroke(1.dp, Color.Black)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+        ) {
+            Text(
+                text = player.name,
+                fontSize = 30.sp,
+                modifier = Modifier
+                    .padding(16.dp),
+                textAlign = TextAlign.Center,
+            )
+            LifeSection(
+                player = player,
+                playerName = player.name,
+                life = player.life,
+                onPlusClick = onPlusClick,
+                onMinusClick = onMinusClick)
+        }
+
+    }
+}
+
+@Composable
+fun LifeSection(
+    player: Player,
+    playerName: String,
+    life: Int,
+    onPlusClick: (String) -> Unit = {},
+    onMinusClick: (String) -> Unit = {}
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            Icons.Outlined.KeyboardArrowUp,
+            contentDescription = "no",
+            modifier = Modifier
+                .size(50.dp)
+                .padding(10.dp)
+                .clickable {
+                    onPlusClick(playerName)
+                },
+        )
+        Text(
+            text = player.life.toString(),
+            fontSize = 70.sp,
+            textAlign = TextAlign.Center,
+        )
+        Icon(
+            Icons.Rounded.KeyboardArrowDown,
+            contentDescription = "no",
+            modifier = Modifier
+                .size(50.dp)
+                .padding(10.dp)
+                .clickable {
+                    onMinusClick(playerName)
+                }
+        )
+    }
+}
+
+@Composable
 fun AddPlayerCard(
     onAddClick: (String) -> Unit = {},
 ) {
@@ -74,63 +161,6 @@ fun AddPlayerCard(
         Icon(
             Icons.Outlined.Add,
             contentDescription = "no"
-        )
-    }
-}
-@Composable
-fun PlayerCard(
-    viewModel: PlayersViewModel,
-    player: Player,
-    onPlusClick: (String) -> Unit = {},
-    onMinusClick: (String) -> Unit = {}
-) {
-    OutlinedCard(
-        modifier = Modifier
-            .size(200.dp, 200.dp)
-            .padding(5.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        border = BorderStroke(1.dp, Color.Black),
-    ) {
-        Text(
-            text = player.name,
-            modifier = Modifier
-                .padding(16.dp),
-            textAlign = TextAlign.Center,
-        )
-        LifeSection(player = player, playerName = player.name, life = player.life, onPlusClick = onPlusClick, onMinusClick = onMinusClick)
-    }
-}
-
-@Composable
-fun LifeSection(
-    player: Player,
-    playerName: String,
-    life: Int,
-    onPlusClick: (String) -> Unit = {},
-    onMinusClick: (String) -> Unit = {}
-) {
-    Row() {
-        Icon(
-            Icons.Outlined.KeyboardArrowUp,
-            contentDescription = "no",
-            modifier = Modifier
-                .clickable {
-                onPlusClick(playerName)
-            }
-        )
-        Text(
-            text = player.life.toString(),
-            textAlign = TextAlign.Center,
-        )
-        Icon(
-            Icons.Rounded.KeyboardArrowDown,
-            contentDescription = "no",
-            modifier = Modifier
-                .clickable {
-                    onMinusClick(playerName)
-                }
         )
     }
 }
