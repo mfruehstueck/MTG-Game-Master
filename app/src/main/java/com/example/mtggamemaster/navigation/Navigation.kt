@@ -30,24 +30,37 @@ fun Navigation(startup: Screens) {
             arguments = listOf(navArgument(name = "${RoutArguments.deckID}") {
                 type = NavType.StringType
             })
-        ) { DeckDetailScreen(navController) }
+        ) { backStackEntry ->
+            DeckDetailScreen(
+                deckID = backStackEntry.arguments?.getString("${RoutArguments.deckID}")!!,
+                navController= navController
+            )
+        }
 
         composable(route = "${Screens.cardscreen}") { CardScreen(navController) }
         composable(
-            route = "${Screens.carddetailscreen}/{${RoutArguments.cardID}",
+            route = "${Screens.carddetailscreen}/{${RoutArguments.cardID}}",
             arguments = listOf(navArgument(name = "${RoutArguments.cardID}") {
                 type = NavType.StringType
             })
-        ) { CardDetailScreen(navController) }
+        ) {backStackEntry ->
+            CardDetailScreen(
+                cardID = backStackEntry.arguments?.getString("${RoutArguments.cardID}")!!,
+                navController = navController
+            )
+        }
 
         composable(route = "${Screens.favoritescreen}") { FavoriteScreen(navController) }
 
         composable(route = "${Screens.gamesscreen}") { GamesScreen(navController) }
-        composable(
-            route = "${Screens.gamesessionscreen}/{${RoutArguments.gameID}",
-            arguments = listOf(navArgument(name = "${RoutArguments.gameID}") {
-                type = NavType.StringType
-            })
-        ) { GameSessionScreen(navController) }
+
+        composable(route = "${Screens.gamesessionscreen}") { GameSessionScreen(navController) }
+        //TODO: delete above in exchange for dynamic route below
+        //  composable(
+        //      route = "${Screens.gamesessionscreen}/{${RoutArguments.gameID}}",
+        //      arguments = listOf(navArgument(name = "${RoutArguments.gameID}") {
+        //          type = NavType.StringType
+        //      })
+        //  ) { backStackEntry -> GameSessionScreen(navController) }
     }
 }

@@ -50,20 +50,13 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
-    //navigation
-    implementation(libs.androidx.navigation.compose)
-
-    //room
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -73,7 +66,24 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation(libs.kotlinx.coroutines.android)
+
+    //UI
+    implementation(libs.coil.compose)
+
+    //navigation
+    implementation(libs.androidx.navigation.compose)
+
+    //room
+
     //MVVM
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    //API
+    implementation(libs.okhttp)
+    implementation ("com.squareup.retrofit2:retrofit:2.2.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.2.0")
+//    implementation (libs.retrofit2)
+//    implementation(libs.gson2)
 }
