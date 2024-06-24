@@ -2,6 +2,7 @@ package com.example.mtggamemaster.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -26,48 +27,68 @@ import com.example.mtggamemaster.Screens
 fun BaseScreen(
     title: String,
     content: @Composable (PaddingValues) -> Unit = {},
-    navController: NavController
+    navController: NavController,
+    floatingActionButton: @Composable () -> Unit = {},
+    actions: @Composable () -> Unit = {}
 ) {
-    Scaffold (
+    Scaffold(
         topBar = {
-            SimpleTopAppBar(title = title, navController = navController)
+            SimpleTopAppBar(title = title, navController = navController, actions = actions)
         },
         bottomBar = {
             SimpleBottomAppBar(navController = navController)
         },
+        floatingActionButton = floatingActionButton,
         content = { innerPadding -> content(innerPadding) }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleTopAppBar(title: String, navController: NavController) {
-    CenterAlignedTopAppBar(
-        title = { Text(title) },
-        navigationIcon = {
-            if (navController.currentBackStackEntry?.destination?.route.toString() == "${Screens.homescreen}") return@CenterAlignedTopAppBar
-            IconButton(
-                onClick = { navController.popBackStack() }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Return"
-                )
+fun SimpleTopAppBar(
+    title: String,
+    navController: NavController,
+    actions: @Composable () -> Unit = {}
+) {
+    Row {
+        CenterAlignedTopAppBar(
+            title = { Text(title) },
+            navigationIcon = {
+                if (navController.currentBackStackEntry?.destination?.route.toString() == "${Screens.homescreen}") return@CenterAlignedTopAppBar
+                IconButton(
+                    onClick = { navController.popBackStack() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Return"
+                    )
+                }
+            },
+            actions = {
+                actions()
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
 fun SimpleBottomAppBar(navController: NavController) {
+    val screens = listOf(
+        Screen.Home,
+        Screen.Decks,
+    )
+
     NavigationBar {
-        NavigationBarItem(
-            selected = true,
-            onClick = {
-                navController.navigate("${Screens.homescreen}")
-            },
-            icon = { Icon(Icons.Filled.Home, contentDescription = "") },
-            label = { Text(text = "Home") })
+        var selected =
+
+            NavigationBarItem(
+                selected = true,
+                onClick = {
+                    navController.navigate("${Screens.homescreen}")
+                },
+                icon = { Icon(Icons.Filled.Home, contentDescription = "") },
+                label = { Text(text = "Home") }
+            )
         NavigationBarItem(
             selected = false,
             onClick = {

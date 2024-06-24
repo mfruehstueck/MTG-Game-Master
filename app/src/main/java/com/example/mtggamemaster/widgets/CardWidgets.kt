@@ -1,6 +1,7 @@
 package com.example.mtggamemaster.widgets
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,6 +52,7 @@ fun CardWidget(
     navController: NavController,
 
     onFavoriteClick: (String) -> Unit = {},
+    onAddToDeckClick: (String) -> Unit = {},
     onCardClick: (String) -> Unit = {}
 ) {
     var isFavorite by remember { mutableStateOf(false) }
@@ -60,7 +62,7 @@ fun CardWidget(
         modifier = modifier
             .fillMaxWidth(0.5f)
             .padding(5.dp)
-            .clickable { onCardClick(card.id) },
+            .clickable { onCardClick(card.id!!) },
 
         shape = ShapeDefaults.Large,
         elevation = CardDefaults.cardElevation(10.dp)
@@ -75,13 +77,13 @@ fun CardWidget(
                 AsyncImage(
                     modifier = Modifier
                         .size(420.dp),
-                    model = card.imageUrl,
+                    model = if (card.imageUrl != null) card.imageUrl else "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F01%2Ffa%2Fa2%2F01faa2745b84deb209b1b7c25cf36a2a.jpg&f=1&nofb=1&ipt=ffe22d3ec06698cff5e9cb27b969a9a96deba7a3974ded46c99aae7dcd23f2fb&ipo=images",
                     contentScale = ContentScale.Fit,
                     contentDescription = card.name,
                     placeholder = painterResource(R.drawable.card_placeholder)
                 )
                 IconButton(onClick = {
-                    onFavoriteClick(card.id)
+                    onFavoriteClick(card.id!!)
                     isFavorite = !isFavorite
                 }) {
                     Icon(
@@ -90,6 +92,17 @@ fun CardWidget(
                         contentDescription = "Like!"
                     )
                 }
+//                IconButton(
+//                    modifier = Modifier
+//                        .padding(start = 0.dp, top = 160.dp, end = 8.dp, bottom = 0.dp),
+//                    onClick = { /*TODO*/ }) {
+//                    Icon(
+//                        modifier = Modifier
+//                            .size(64.dp),
+//                        imageVector = Icons.Default.Add,
+//                        contentDescription = "Add to deck"
+//                    )
+//                }
             }
 
         }
@@ -100,7 +113,9 @@ fun CardWidget(
 fun CardWidgetDetail(
     modifier: Modifier = Modifier,
     currentCard: Card,
-    navController: NavController
+    navController: NavController,
+
+    onFavoriteClick: (String) -> Unit = {}
 ) {
     Column(
         modifier = modifier,
@@ -133,6 +148,11 @@ fun CardWidgetDetail(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
+
+
+            onFavoriteClick = { cardID ->
+                onFavoriteClick(cardID)
+            },
             card = currentCard,
             navController = navController
         )
@@ -193,13 +213,13 @@ fun DetailRowSingle(title: String, text: String) {
     val rowHeight = 32.dp
     val headerWidth = 128.dp
 
-    Row (
+    Row(
         modifier = Modifier
 //            .height(rowHeight)
             .fillMaxHeight()
             .fillMaxWidth()
             .padding(4.dp)
-    ){
+    ) {
         Text(
             modifier = Modifier
                 .size(headerWidth, rowHeight),
@@ -225,8 +245,8 @@ fun DetailRowSingle(title: String, text: String) {
 
 @Composable
 fun DetailRowList(prefix: String, list: Map<String, String>?) {
-    if(list == null) return
-    for(item in list) {
+    if (list == null) return
+    for (item in list) {
         Text(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -244,16 +264,33 @@ fun DetailRowList(prefix: String, list: Map<String, String>?) {
 fun CardWidgetGrid(
     cardList: List<Card>,
     navController: NavController,
+
+    onFavoriteClick: (String) -> Unit = {},
+
     innerPadding: PaddingValues
 ) {
+    //N(*1): tried optimization
+//    val page = remember { mutableIntStateOf(1) }
+//    val loading = remember { mutableStateOf(false) }
+//    val itemList = remember { mutableStateListOf<Card>() }
+//    val listState = rememberLazyListState()
+
     LazyVerticalGrid(
         modifier = Modifier.padding(innerPadding),
+
+//*1:        state = listState,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+
         columns = GridCells.Fixed(2)
     ) {
         items(cardList) { card ->
             CardWidget(
                 card = card,
-                navController = navController
+                navController = navController,
+
+                onFavoriteClick = { cardID ->
+                    onFavoriteClick(cardID)
+                }
             ) { cardID ->
                 navController.navigate("${Screens.carddetailscreen}/$cardID")
             }

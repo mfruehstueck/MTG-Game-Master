@@ -8,14 +8,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mtggamemaster.RoutArguments
 import com.example.mtggamemaster.Screens
-import com.example.mtggamemaster.screens.CardDetailScreen
-import com.example.mtggamemaster.screens.CardScreen
-import com.example.mtggamemaster.screens.DeckDetailScreen
-import com.example.mtggamemaster.screens.DeckScreen
-import com.example.mtggamemaster.screens.FavoriteScreen
+import com.example.mtggamemaster.screens.card.CardDetailScreen
+import com.example.mtggamemaster.screens.card.CardScreen
+import com.example.mtggamemaster.screens.deck.DeckDetailScreen
+import com.example.mtggamemaster.screens.deck.DeckEditScreen
+import com.example.mtggamemaster.screens.deck.DeckScreen
+import com.example.mtggamemaster.screens.card.FavoriteScreen
 import com.example.mtggamemaster.screens.GameSessionScreen
 import com.example.mtggamemaster.screens.GamesScreen
 import com.example.mtggamemaster.screens.HomeScreen
+import com.example.mtggamemaster.screens.SearchScreen
 
 @Composable
 fun Navigation(startup: Screens) {
@@ -26,14 +28,29 @@ fun Navigation(startup: Screens) {
 
         composable(route = "${Screens.deckscreen}") { DeckScreen(navController) }
         composable(
-            route = "${Screens.deckdetailscreen}/{${RoutArguments.deckID}",
+            route = "${Screens.deckdetailscreen}/{${RoutArguments.deckID}}",
             arguments = listOf(navArgument(name = "${RoutArguments.deckID}") {
                 type = NavType.StringType
             })
         ) { backStackEntry ->
             DeckDetailScreen(
                 deckID = backStackEntry.arguments?.getString("${RoutArguments.deckID}")!!,
-                navController= navController
+                navController = navController,
+            )
+        }
+        composable(
+            route = "${Screens.deckeditscreen}/{${RoutArguments.deckID}}",
+            arguments = listOf(navArgument(name = "${RoutArguments.deckID}") {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            var deckID = backStackEntry.arguments?.getString("${RoutArguments.deckID}")
+            if (deckID == null) deckID = ""
+
+
+            DeckEditScreen(
+                deckID = deckID,
+                navController = navController
             )
         }
 
@@ -43,12 +60,13 @@ fun Navigation(startup: Screens) {
             arguments = listOf(navArgument(name = "${RoutArguments.cardID}") {
                 type = NavType.StringType
             })
-        ) {backStackEntry ->
+        ) { backStackEntry ->
             CardDetailScreen(
                 cardID = backStackEntry.arguments?.getString("${RoutArguments.cardID}")!!,
                 navController = navController
             )
         }
+        composable(route = "${Screens.searchscreen}") { SearchScreen(navController) }
 
         composable(route = "${Screens.favoritescreen}") { FavoriteScreen(navController) }
 

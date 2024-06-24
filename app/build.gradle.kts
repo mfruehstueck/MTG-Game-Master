@@ -83,7 +83,7 @@ dependencies {
     //API
     implementation(libs.okhttp)
     implementation ("com.squareup.retrofit2:retrofit:2.2.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.2.0")
+    implementation (libs.converter.gson)
 //    implementation (libs.retrofit2)
 //    implementation(libs.gson2)
 }
