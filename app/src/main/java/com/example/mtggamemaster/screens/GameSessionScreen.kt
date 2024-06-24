@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mtggamemaster.models.Player
 import com.example.mtggamemaster.viewmodels.PlayersViewModel
+import com.example.mtggamemaster.widgets.AddPlayerActionButton
 import com.example.mtggamemaster.widgets.PlayerCard
 import com.example.mtggamemaster.widgets.PlayerGrid
 
@@ -33,10 +34,7 @@ fun GameSessionScreen() {
     val testingPlayerList = ArrayDeque<Player>(listOf(Player(name = "Manuel", life = 20), Player(name = "Alex", life = 20), Player(name = "Max", life = 20)))
     Scaffold(
             floatingActionButton = {
-                ExtendedFloatingActionButton(onClick = { viewModel.addPlayer(testingPlayerList.removeFirst()) }) {
-                    Icon(Icons.Default.Add, contentDescription = "Add")
-                    Text(text = "Add Player")
-                }
+                    AddPlayerActionButton(onConfirmation = { name -> viewModel.addPlayer(player = Player(name = name)) })
             }
         ) { innerPadding ->
         PlayerGrid(viewModel = viewModel, modifier = Modifier.padding(innerPadding))
