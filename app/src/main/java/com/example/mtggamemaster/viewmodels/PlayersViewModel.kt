@@ -22,11 +22,33 @@ class PlayersViewModel : ViewModel() {
             }
         }
     }
+    fun gainEnergy(playerName: String) {
+        _players.update { currentPlayers ->
+            currentPlayers.map { player ->
+                if (player.name == playerName) {
+                    player.copy(energy = player.energy + 1)
+                } else {
+                    player
+                }
+            }
+        }
+    }
     fun loseLife(playerName: String) {
         _players.update { currentPlayers ->
             currentPlayers.map { player ->
                 if (player.name == playerName) {
                     player.copy(life = player.life - 1)
+                } else {
+                    player
+                }
+            }
+        }
+    }
+    fun loseEnergy(playerName: String) {
+        _players.update { currentPlayers ->
+            currentPlayers.map { player ->
+                if (player.name == playerName) {
+                    player.copy(energy = player.energy - 1)
                 } else {
                     player
                 }

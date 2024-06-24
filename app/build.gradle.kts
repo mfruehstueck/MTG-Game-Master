@@ -70,6 +70,7 @@ dependencies {
 
     //UI
     implementation(libs.coil.compose)
+    implementation ("androidx.compose.material:material-icons-extended")
 
     //navigation
     implementation(libs.androidx.navigation.compose)
@@ -84,6 +85,5 @@ dependencies {
     implementation(libs.okhttp)
     implementation ("com.squareup.retrofit2:retrofit:2.2.0")
     implementation (libs.converter.gson)
-//    implementation (libs.retrofit2)
-//    implementation(libs.gson2)
+
 }

@@ -13,18 +13,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mtggamemaster.models.Player
 import com.example.mtggamemaster.viewmodels.PlayersViewModel
+import com.example.mtggamemaster.widgets.AddPlayerActionButton
+import com.example.mtggamemaster.widgets.PlayerCard
 import com.example.mtggamemaster.widgets.PlayerGrid
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameSessionScreen(navController: NavController) {
     val viewModel: PlayersViewModel = viewModel()
-    val testingPlayerList = ArrayDeque<Player>(
-        listOf(
-            Player(name = "Manuel", life = 20),
-            Player(name = "Alex", life = 20),
-            Player(name = "Max", life = 20)
-        )
-    )
 
     BaseScreen(
         title = "Game Session",
@@ -33,10 +29,7 @@ fun GameSessionScreen(navController: NavController) {
             Scaffold(
                 modifier = Modifier.padding(innerPadding),
                 floatingActionButton = {
-                    ExtendedFloatingActionButton(onClick = { viewModel.addPlayer(testingPlayerList.removeFirst()) }) {
-                        Icon(Icons.Default.Add, contentDescription = "Add")
-                        Text(text = "Add Player")
-                    }
+                    AddPlayerActionButton(onConfirmation = { name -> viewModel.addPlayer(player = Player(name = name)) })
                 },
                 content = { innerPadding -> PlayerGrid(viewModel = viewModel, modifier = Modifier.padding(innerPadding)) }
             )
