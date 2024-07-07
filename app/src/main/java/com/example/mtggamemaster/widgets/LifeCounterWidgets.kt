@@ -275,7 +275,7 @@ fun WinPlayerDialog(
                 items(optionList) { option ->
                     Row {
                         RadioButton(
-                            selected = selected,
+                            selected = (selectedOption == option.id),
                             onClick = {
                                 selected = !selected
                                 selectedOption = option.id
@@ -287,7 +287,7 @@ fun WinPlayerDialog(
                 item {
                     Row {
                         RadioButton(
-                            selected = selected,
+                            selected = (selectedOption == "draw"),
                             onClick = {
                                 selected = !selected
                                 selectedOption = "draw"
@@ -827,11 +827,17 @@ fun EndGame(
             onDismissRequest = { dialogOpen = false },
             onConfirmation = { selectedPlayer ->
                 if (selectedPlayer != "draw") {
-                    val currentPlayer =
+                    val winningPlayer =
                         currentGameSession.players.find { check -> check.id == selectedPlayer }!!
-                    currentPlayer.wins++
+                    winningPlayer.wins++
 
-                    currentGameSession.winner = currentPlayer
+                    currentGameSession.players.forEach { player ->
+                        if (player != winningPlayer) {
+                            player.losses++
+                        }
+                    }
+
+                    currentGameSession.winner = winningPlayer
                 }
                 onEndGame()
             }

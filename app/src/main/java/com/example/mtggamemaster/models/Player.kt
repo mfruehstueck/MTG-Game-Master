@@ -6,7 +6,8 @@ data class Player(
     var life: Int = 40,
     var poison: Int = 0,
     var energy: Int = 0,
-    var wins: Int = 0
+    var wins: Int = 0,
+    var losses: Int = 0
 ) {
     fun update(player: Player) {
         this.name = player.name
@@ -14,6 +15,7 @@ data class Player(
         this.poison = player.poison
         this.energy = player.energy
         this.wins = player.wins
+        this.losses = player.losses
     }
 
     fun updateLife(life: Int): Player {
