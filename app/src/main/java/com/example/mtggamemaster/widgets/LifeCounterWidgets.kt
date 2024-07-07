@@ -250,78 +250,87 @@ fun WinPlayerDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: (String) -> Unit,
 ) {
-    var selected by remember {
-        mutableStateOf(false)
-    }
-    var selectedOption by remember {
-        mutableStateOf("")
-    }
+    var selectedOption by remember { mutableStateOf("") }
 
-    Dialog(
-        onDismissRequest = { onDismissRequest() }
-    ) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .height(420.dp),
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = "Choose winning player",
-                Modifier.padding(12.dp)
-            )
-            LazyColumn {
-                items(optionList) { option ->
-                    Row {
-                        RadioButton(
-                            selected = (selectedOption == option.id),
-                            onClick = {
-                                selected = !selected
-                                selectedOption = option.id
-                            }
-                        )
-                        Text(text = option.name)
-                    }
-                }
-                item {
-                    Row {
-                        RadioButton(
-                            selected = (selectedOption == "draw"),
-                            onClick = {
-                                selected = !selected
-                                selectedOption = "draw"
-                            }
-                        )
-                        Text(text = "draw")
-                    }
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+            Card(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                TextButton(
-                    onClick = { onDismissRequest() },
-                    modifier = Modifier.padding(8.dp),
-                ) {
-                    Text("Dismiss")
-                }
-                TextButton(
-                    enabled = selectedOption.isNotEmpty(),
-                    onClick = {
-                        onConfirmation(selectedOption)
-                        onDismissRequest()
-                    },
-                    modifier = Modifier.padding(8.dp),
-                ) {
-                    Text("Confirm")
+                Column {
+                    Text(
+                        text = "Choose winning player",
+                        modifier = Modifier.padding(12.dp)
+                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp) // Fixed height to make it scrollable within this height
+                    ) {
+                        items(optionList) { option ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                RadioButton(
+                                    selected = selectedOption == option.id,
+                                    onClick = {
+                                        selectedOption = option.id
+                                    }
+                                )
+                                Text(text = option.name)
+                            }
+                        }
+                        item {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                RadioButton(
+                                    selected = selectedOption == "draw",
+                                    onClick = {
+                                        selectedOption = "draw"
+                                    }
+                                )
+                                Text(text = "draw")
+                            }
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        TextButton(
+                            onClick = { onDismissRequest() },
+                        ) {
+                            Text("Dismiss")
+                        }
+                        TextButton(
+                            enabled = selectedOption.isNotEmpty(),
+                            onClick = {
+                                onConfirmation(selectedOption)
+                                onDismissRequest()
+                            },
+                        ) {
+                            Text("Confirm")
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -382,7 +391,8 @@ fun PlayerCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
         ) {
             Text(
                 text = player.name,
@@ -783,9 +793,6 @@ fun MiddleBar(
         modifier = Modifier
             .padding(3.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
         border = BorderStroke(1.dp, Color.Black)
     ) {
         Row {
@@ -796,7 +803,13 @@ fun MiddleBar(
                 )
             }
             DieIcon(viewModel = viewModel)
-            StartingLifeIcon(viewModel = viewModel)
+            StartingLifeIcon(
+                viewModel = viewModel,
+                onConfirmation = {
+                    life -> viewModel.setStartingLife(gamesessionID, life)
+                    navController.navigate("${Screens.gamesessionscreen}/${gamesessionID}")
+                }
+            )
             EndGame(currentGameSession = viewModel.getByID(gamesessionID)!!) {
                 viewModel.add()
                 navController.navigate("${Screens.gamesessionscreen}/${gamesessionID}")
@@ -827,17 +840,11 @@ fun EndGame(
             onDismissRequest = { dialogOpen = false },
             onConfirmation = { selectedPlayer ->
                 if (selectedPlayer != "draw") {
-                    val winningPlayer =
+                    val currentPlayer =
                         currentGameSession.players.find { check -> check.id == selectedPlayer }!!
-                    winningPlayer.wins++
+                    currentPlayer.wins++
 
-                    currentGameSession.players.forEach { player ->
-                        if (player != winningPlayer) {
-                            player.losses++
-                        }
-                    }
-
-                    currentGameSession.winner = winningPlayer
+                    currentGameSession.winner = currentPlayer
                 }
                 onEndGame()
             }
@@ -847,7 +854,8 @@ fun EndGame(
 
 @Composable
 fun StartingLifeIcon(
-    viewModel: PlayersViewModel
+    viewModel: PlayersViewModel,
+    onConfirmation: (Int) -> Unit = {}
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
     Icon(
@@ -860,7 +868,8 @@ fun StartingLifeIcon(
     )
     if (dialogOpen) {
         StartingLifeDialog(
-            onDismissRequest = { dialogOpen = false }
+            onDismissRequest = { dialogOpen = false },
+            onConfirmation = onConfirmation
         )
     }
 }
@@ -918,8 +927,15 @@ fun DieRollDialog(
 @Composable
 fun StartingLifeDialog(
     onDismissRequest: () -> Unit,
-    onConfirmation: (String) -> Unit = {}
+    onConfirmation: (Int) -> Unit = {}
 ) {
+    var text by remember { mutableStateOf("") }
+    var isEnabled by remember { mutableStateOf(false) }
+    if (text != "") {
+        isEnabled = true
+    } else {
+        isEnabled = false
+    }
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier
@@ -940,9 +956,6 @@ fun StartingLifeDialog(
                         .wrapContentSize(Alignment.Center),
                     textAlign = TextAlign.Center
                 )
-                var text by remember {
-                    mutableStateOf("")
-                }
                 TextField(
                     modifier = Modifier.padding(12.dp),
                     value = text,
@@ -951,6 +964,28 @@ fun StartingLifeDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true
                 )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    TextButton(
+                        onClick = { onDismissRequest() },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Dismiss")
+                    }
+                    TextButton(
+                        enabled = isEnabled,
+                        onClick = {
+                            onConfirmation(text.toInt())
+                            onDismissRequest()
+                        },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Confirm")
+                    }
+                }
 
             }
         }

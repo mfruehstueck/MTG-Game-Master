@@ -171,6 +171,7 @@ class PlayersViewModel(
 
     fun addPlayer(gamesessionID: String, playerName: String) {
         var player: Player? = null
+        val life = getByID(gamesessionID)!!.startingLife
 
         viewModelScope.launch {
             repository.getPlayers().collect { players ->
@@ -192,6 +193,17 @@ class PlayersViewModel(
             _players.update { players ->
                 players - player
             }
+        }
+    }
+
+    fun setStartingLife(gamesessionID: String, life: Int) {
+        var gamesession: GameSession? = null
+
+        viewModelScope.launch {
+            repository.gamesession_getByID(gamesessionID).collect {
+                gamesession = it
+            }
+            repository.gamesession_setStartingLife(gamesessionID, life)
         }
     }
 
