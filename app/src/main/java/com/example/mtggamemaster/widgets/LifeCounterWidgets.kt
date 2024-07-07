@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Accessibility
@@ -43,8 +44,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -55,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mtggamemaster.models.Player
 import com.example.mtggamemaster.viewmodels.PlayersViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +69,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
@@ -587,7 +592,8 @@ fun AddPlayerDialog(
                     modifier = Modifier.padding(12.dp),
                     value = text,
                     onValueChange = { text = it },
-                    label = { Text("New Player") }
+                    label = { Text("New Player") },
+                    singleLine = true
                 )
                 Row(
                     modifier = Modifier
@@ -635,7 +641,28 @@ fun MiddleBar(
         Row {
             AddPlayerIcon { name -> viewModel.addPlayer(player = Player(name = name)) }
             DieIcon(viewModel = viewModel)
+            StartingLifeIcon(viewModel = viewModel)
         }
+    }
+}
+
+@Composable
+fun StartingLifeIcon(
+    viewModel: PlayersViewModel
+) {
+    var dialogOpen by remember { mutableStateOf(false) }
+    Icon(
+        Icons.Outlined.Favorite,
+        contentDescription = "no",
+        modifier = Modifier
+            .size(50.dp)
+            .padding(10.dp)
+            .clickable { dialogOpen = true }
+    )
+    if (dialogOpen) {
+        StartingLifeDialog(
+            onDismissRequest = { dialogOpen = false }
+        )
     }
 }
 
@@ -684,6 +711,48 @@ fun DieRollDialog(
                         .wrapContentSize(Alignment.Center),
                     textAlign = TextAlign.Center
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun StartingLifeDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: (String) -> Unit = {}
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(16.dp),
+
+            ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = "Select starting life",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize(Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+                var text by remember {
+                    mutableStateOf("")
+                }
+                TextField(
+                    modifier = Modifier.padding(12.dp),
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("Starting Life") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true
+                )
+
             }
         }
     }
