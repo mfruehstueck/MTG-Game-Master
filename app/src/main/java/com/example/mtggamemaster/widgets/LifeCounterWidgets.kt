@@ -1,10 +1,12 @@
 package com.example.mtggamemaster.widgets
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AreaChart
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.Dataset
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Person
@@ -50,6 +54,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -59,14 +64,99 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModel
 
+@Composable
+fun NewPlayerGrid(
+    viewModel: PlayersViewModel,
+    modifier: Modifier
+) {
+    val players by viewModel.players.collectAsState()
+    Column {
+        Column {
+            var n = players.size
+            var c = 0
+            if(n % 2 != 0) {
+                PlayerCard(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .fillMaxWidth()
+                        .weight(1f),
+                    viewModel = viewModel,
+                    player = players[0],
+                    onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName)},
+                    onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName)}
+                )
+                c++
+            }
+            if (n == 2) {
+                PlayerCard(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .weight(1f),
+                    viewModel = viewModel,
+                    player = players[0],
+                    onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName)},
+                    onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName)}
+                )
+                c++
+                PlayerCard(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .weight(1f),
+                    viewModel = viewModel,
+                    player = players[1],
+                    onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName)},
+                    onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName)}
+                )
+                c++
+
+            }
+            for (i in c..<n step 2) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    PlayerCard(
+                        modifier = Modifier
+                            .padding(3.dp)
+                            .weight(1f),
+                        viewModel = viewModel,
+                        player = players[i],
+                        onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName)},
+                        onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName)}
+                    )
+                    if(i + 1 <= n) {
+                        PlayerCard(
+                            modifier = Modifier
+                                .padding(3.dp)
+                                .weight(1f),
+                            viewModel = viewModel,
+                            player = players[i + 1],
+                            onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName)},
+                            onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName)}
+                        )
+                    }
+
+                }
+
+            }
+            MiddleBar(viewModel = viewModel)
+        }
+
+    }
+}
 @Composable
 fun PlayerGrid(
     viewModel: PlayersViewModel,
     modifier: Modifier
 ) {
+    var contextMenuPlayer by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
     val players by viewModel.players.collectAsState()
     when(players.size) {
+        0 -> MiddleBar(viewModel = viewModel)
         1 -> Grid1Player(viewModel = viewModel, players = players)
         2 -> Grid2Players(viewModel = viewModel, players = players)
         3 -> Grid3Players(viewModel = viewModel, players = players)
@@ -91,22 +181,27 @@ fun PlayerGrid(
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Grid1Player(
     viewModel: PlayersViewModel,
     players: List<Player>
 ) {
-    Column(
-    ) {
+    Column {
         PlayerCard(
             modifier = Modifier
-                .fillMaxHeight()
-                .padding(8.dp),
+                .fillMaxHeight(0.9f)
+                .padding(8.dp)
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = { viewModel.removePlayer(players[0]) }
+                ),
             viewModel = viewModel,
             player = players[0],
-            onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName)},
-            onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName)}
+            onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
+            onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
         )
+        MiddleBar(viewModel = viewModel)
     }
 }
 @Composable
@@ -125,6 +220,7 @@ fun Grid2Players(
             onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName)},
             onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName)}
         )
+        MiddleBar(viewModel = viewModel)
         PlayerCard(
             modifier = Modifier
                 .fillMaxHeight()
@@ -314,7 +410,7 @@ fun SymbolSelection(
                 )
                 .clip(RoundedCornerShape(100.dp))
                 .clickable { onSymbolSelected(1) }
-                .size(48.dp),
+                .weight(1f),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -331,7 +427,7 @@ fun SymbolSelection(
                 )
                 .clip(RoundedCornerShape(100.dp))
                 .clickable { onSymbolSelected(2) }
-                .size(48.dp),
+                .weight(1f),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -350,7 +446,7 @@ fun SymbolSelection(
                 .clickable(
                     onClick = { onSymbolSelected(3) },
                 )
-                .size(48.dp),
+                .weight(1f),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -458,31 +554,6 @@ fun EnergySection(
 }
 
 @Composable
-fun AddPlayerCard(
-    onAddClick: (String) -> Unit = {},
-) {
-    OutlinedCard(
-        modifier = Modifier
-            .size(200.dp, 200.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        border = BorderStroke(1.dp, Color.Black),
-    ) {
-        Text(
-            text = "Add Player",
-            modifier = Modifier
-                .padding(16.dp),
-            textAlign = TextAlign.Center,
-        )
-        Icon(
-            Icons.Outlined.Add,
-            contentDescription = "no"
-        )
-    }
-}
-
-@Composable
 fun AddPlayerActionButton(
     onConfirmation: (String) -> Unit = {}
 ) {
@@ -491,6 +562,26 @@ fun AddPlayerActionButton(
         Icon(Icons.Default.Add, contentDescription = "Add")
         Text(text = "Add Player")
     }
+    if(dialogOpen) {
+        AddPlayerDialog(
+            onDismissRequest = { dialogOpen = false },
+            onConfirmation = onConfirmation
+        )
+    }
+}
+@Composable
+fun AddPlayerIcon(
+    onConfirmation: (String) -> Unit = {}
+) {
+    var dialogOpen by remember { mutableStateOf(false) }
+    Icon(
+        Icons.Outlined.Add,
+        contentDescription = "no",
+        modifier = Modifier
+            .size(50.dp)
+            .padding(10.dp)
+            .clickable { dialogOpen = true }
+    )
     if(dialogOpen) {
         AddPlayerDialog(
             onDismissRequest = { dialogOpen = false },
@@ -563,4 +654,83 @@ fun AddPlayerDialog(
             }
         }
     }
+}
+
+@Composable
+fun MiddleBar(
+    viewModel: PlayersViewModel
+) {
+    OutlinedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 12.dp
+        ),
+        modifier = Modifier
+            .padding(3.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        border = BorderStroke(1.dp, Color.Black)
+    ) {
+        Row {
+            AddPlayerIcon { name -> viewModel.addPlayer(player = Player(name = name)) }
+            DieIcon(viewModel = viewModel)
+        }
+    }
+}
+
+@Composable
+fun DieIcon(
+    viewModel: PlayersViewModel
+) {
+    var dialogOpen by remember { mutableStateOf(false) }
+    Icon(
+        Icons.Outlined.Dataset,
+        contentDescription = "no",
+        modifier = Modifier
+            .size(50.dp)
+            .padding(10.dp)
+            .clickable { dialogOpen = true }
+    )
+    if (dialogOpen) {
+        DieRollDialog(
+            onDismissRequest = { dialogOpen = false },
+            rolledNumber = viewModel.rollDie()
+        )
+    }
+}
+@Composable
+fun DieRollDialog(
+    onDismissRequest: () -> Unit,
+    rolledNumber: Int
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .padding(16.dp),
+
+            ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = "You rolled a $rolledNumber!",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+@Composable
+fun RemovePlayerContextMenu(
+    onDismissRequest: () -> Unit,
+    onConfirmation: (String) -> Unit
+) {
+
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+// Schould probably be renamed to GameSessionModel
 class PlayersViewModel : ViewModel() {
     private val _players = MutableStateFlow<List<Player>>(mutableListOf())
     val players: StateFlow<List<Player>> = _players.asStateFlow()
@@ -59,5 +60,13 @@ class PlayersViewModel : ViewModel() {
         _players.update { players ->
             players+player
         }
+    }
+    fun removePlayer(player: Player) {
+        _players.update { players ->
+            players - player
+        }
+    }
+    fun rollDie(): Int {
+        return (1..6).random()
     }
 }
