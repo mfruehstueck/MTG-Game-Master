@@ -66,24 +66,26 @@ fun SearchWidget(
 //            lableModifier = Modifier
 //                .width(lableWidth)
 //        )
-        CompareOperator(
-            lable = "Mana cost converted",
-            lableModifier = Modifier
-                .width(lableWidth)
-                .padding(4.dp)
-        )
-        CompareOperator(
-            lable = "P",
-            lableModifier = Modifier
-                .width(lableWidth)
-                .padding(4.dp)
-        )
-        CompareOperator(
-            lable = "T",
-            lableModifier = Modifier
-                .width(lableWidth)
-                .padding(4.dp)
-        )
+
+        //TODO: add these filters
+//        CompareOperator(
+//            lable = "Mana cost converted",
+//            lableModifier = Modifier
+//                .width(lableWidth)
+//                .padding(4.dp)
+//        )
+//        CompareOperator(
+//            lable = "P",
+//            lableModifier = Modifier
+//                .width(lableWidth)
+//                .padding(4.dp)
+//        )
+//        CompareOperator(
+//            lable = "T",
+//            lableModifier = Modifier
+//                .width(lableWidth)
+//                .padding(4.dp)
+//        )
 
         CheckboxGrid(
             lable = "Colors",
