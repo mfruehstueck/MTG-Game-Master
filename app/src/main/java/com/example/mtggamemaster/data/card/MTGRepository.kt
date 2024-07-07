@@ -2,10 +2,12 @@ package com.example.mtggamemaster.data.card
 
 import com.example.mtggamemaster.data.card.api.MTGAPI
 import com.example.mtggamemaster.models.Deck
+import com.example.mtggamemaster.models.GameSession
 import com.example.mtggamemaster.models.Player
 import com.example.mtggamemaster.models.card.Card
 import com.example.mtggamemaster.models.card.CardFilter
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 
 class MTGRepository(/*private val cardDAO: CardDAO*/) {
@@ -125,6 +127,66 @@ class MTGRepository(/*private val cardDAO: CardDAO*/) {
         foundDeck.cardList.remove(foundCard)
     }
 
+    //NSEC: GameSessions
+
+    fun gamesession_add(gamesession: GameSession) {
+        if (!TempDatabase.gamesessions.contains(gamesession)) {
+            TempDatabase.gamesessions.add(gamesession)
+        }
+    }
+
+    fun gamesession_getAll(): Flow<List<GameSession>?> = flowOf(TempDatabase.gamesessions)
+    fun gamesession_getByID(gamesessionID: String): Flow<GameSession?> =
+        flowOf(TempDatabase.gamesessions.find { check -> check.id == gamesessionID })
+
+    fun gamesession_addPlayer(gamesessionID: String, player: Player) {
+        val foundGamesession = TempDatabase.gamesessions.find { check ->
+            check.id == gamesessionID
+        } ?: return
+
+        foundGamesession.players.add(player)
+    }
+
+    fun gamesession_getPlayerByID(gamesessionID: String, playerID: String): Flow<Player?> {
+        val foundGamesession = TempDatabase.gamesessions.find { check ->
+            check.id == gamesessionID
+        } ?: return emptyFlow()
+
+        val foundPlayer = foundGamesession.players.find { check ->
+            check.id == playerID
+        } ?: return emptyFlow()
+
+        return flowOf(foundPlayer)
+    }
+
+    fun gamesession_updatePlayer(gamesessionID: String, player: Player) {
+        val foundGamesession = TempDatabase.gamesessions.find { check ->
+            check.id == gamesessionID
+        } ?: return
+
+        val foundPlayer = foundGamesession.players.find { check ->
+            check.id == player.id
+        } ?: return
+
+        foundPlayer.update(player)
+    }
+
+    fun gamesession_getPlayers(gamesessionID: String): Flow<List<Player>?> {
+        val foundGamesession = TempDatabase.gamesessions.find { check ->
+            check.id == gamesessionID
+        } ?: return emptyFlow()
+
+        return flowOf(foundGamesession.players)
+    }
+
+    fun gamesession_removePlayer(gamesessionID: String, player: Player) {
+        val foundGamesession = TempDatabase.gamesessions.find { check ->
+            check.id == gamesessionID
+        } ?: return
+
+        foundGamesession.players.remove(player)
+    }
+
 
     //NSEC: Player
     fun addPlayer(player: Player) {
@@ -138,7 +200,16 @@ class MTGRepository(/*private val cardDAO: CardDAO*/) {
         currentPlayer.update(player)
     }
 
-    fun getPlayers(): Flow<List<Player>?> = flowOf(TempDatabase.players)
+    fun getPlayers(): Flow<List<Player>?> {
+        val players: MutableSet<Player> = mutableSetOf()
+
+        TempDatabase.gamesessions.forEach { gamesession ->
+            players.addAll(gamesession.players)
+        }
+
+        return flowOf(players.toList())
+    }
+
 
     companion object {
         var firstRun = true

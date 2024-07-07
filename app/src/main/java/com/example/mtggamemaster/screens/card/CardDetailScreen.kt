@@ -65,28 +65,6 @@ fun CardDetailScreen(cardID: String, navController: NavController) {
                 navController = navController,
                 onFavoriteClick = { viewmodel.toggleFavorite(currentCard.id!!) }
             )
-//                Column(
-//                    modifier = Modifier
-//                        .verticalScroll(rememberScrollState())
-//
-//                        .padding(innerPadding),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Column (
-//                        horizontalAlignment = Alignment.CenterHorizontally,
-////                        verticalArrangement = Arrangement.Center
-//                    ){
-//                        CardWidget(
-//                            card = currentCard,
-//                            navController = navController
-//                        )
-//                    }
-//                    CardWidgetDetail(currentCard)
-//                }
-
-//                navController.navigate("${navController.previousBackStackEntry?.destination?.route}")
-
-
         }
     )
 }

@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.example.mtggamemaster.Screens
+import com.example.mtggamemaster.data.card.TempDatabase
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -115,7 +116,7 @@ fun SimpleBottomAppBar(navController: NavController) {
         NavigationBarItem(
             selected = false,
             onClick = {
-                navController.navigate("${Screens.gamesessionscreen}")
+                navController.navigate("${Screens.gamesessionscreen}/${TempDatabase.gamesessions.size - 1}")
             },
             icon = { Icon(Icons.Filled.PlayArrow, contentDescription = "") },
             label = { Text(text = "Games") })

@@ -8,16 +8,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mtggamemaster.RoutArguments
 import com.example.mtggamemaster.Screens
-import com.example.mtggamemaster.screens.card.CardDetailScreen
-import com.example.mtggamemaster.screens.card.CardScreen
-import com.example.mtggamemaster.screens.deck.DeckDetailScreen
-import com.example.mtggamemaster.screens.deck.DeckEditScreen
-import com.example.mtggamemaster.screens.deck.DeckScreen
-import com.example.mtggamemaster.screens.card.FavoriteScreen
 import com.example.mtggamemaster.screens.GameSessionScreen
 import com.example.mtggamemaster.screens.GamesScreen
 import com.example.mtggamemaster.screens.HomeScreen
 import com.example.mtggamemaster.screens.SearchScreen
+import com.example.mtggamemaster.screens.card.CardDetailScreen
+import com.example.mtggamemaster.screens.card.CardScreen
+import com.example.mtggamemaster.screens.card.FavoriteScreen
+import com.example.mtggamemaster.screens.deck.DeckDetailScreen
+import com.example.mtggamemaster.screens.deck.DeckEditScreen
+import com.example.mtggamemaster.screens.deck.DeckScreen
 
 @Composable
 fun Navigation(startup: Screens) {
@@ -72,7 +72,17 @@ fun Navigation(startup: Screens) {
 
         composable(route = "${Screens.gamesscreen}") { GamesScreen(navController) }
 
-        composable(route = "${Screens.gamesessionscreen}") { GameSessionScreen(navController) }
+        composable(
+            route = "${Screens.gamesessionscreen}/{${RoutArguments.gamesessionID}}",
+            arguments = listOf(navArgument(name = "${RoutArguments.gamesessionID}") {
+                type = NavType.StringType
+            })
+        ) {backStackEntry ->
+            GameSessionScreen(
+            gamesessionID = backStackEntry.arguments?.getString("${RoutArguments.gamesessionID}")!!,
+                navController = navController
+            )
+        }
         //TODO: delete above in exchange for dynamic route below
         //  composable(
         //      route = "${Screens.gamesessionscreen}/{${RoutArguments.gameID}}",

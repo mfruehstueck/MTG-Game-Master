@@ -16,12 +16,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.CallEnd
 import androidx.compose.material.icons.outlined.Dangerous
 import androidx.compose.material.icons.outlined.Dataset
 import androidx.compose.material.icons.outlined.Delete
@@ -37,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -56,14 +62,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
+import com.example.mtggamemaster.Screens
+import com.example.mtggamemaster.models.GameSession
 import com.example.mtggamemaster.models.Player
 import com.example.mtggamemaster.viewmodels.player.PlayersViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NewPlayerGrid(
+    gamesessionID: String,
     viewModel: PlayersViewModel,
-    modifier: Modifier
+    modifier: Modifier,
+    navController: NavController
 ) {
     val players by viewModel.players.collectAsState()
     var contextMenuPlayer by rememberSaveable {
@@ -73,7 +84,7 @@ fun NewPlayerGrid(
         PlayerActionSheet(
             player = contextMenuPlayer!!,
             onDismissSheet = { contextMenuPlayer = null },
-            onDeleteClick = { player -> viewModel.removePlayer(player) }
+            onDeleteClick = { player -> viewModel.removePlayer(gamesessionID, player) }
         )
     }
     Column() {
@@ -92,9 +103,20 @@ fun NewPlayerGrid(
                         }
                     ),
                 viewModel = viewModel,
+                gamesessionID = gamesessionID,
                 player = players[0],
-                onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
-                onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) }
+                onPlusClick = { playerID ->
+                    viewModel.gainLife(
+                        gamesessionID,
+                        playerID = playerID
+                    )
+                },
+                onMinusClick = { playerID ->
+                    viewModel.loseLife(
+                        gamesessionID,
+                        playerID = playerID
+                    )
+                }
             )
             c++
         }
@@ -110,9 +132,20 @@ fun NewPlayerGrid(
                         }
                     ),
                 viewModel = viewModel,
+                gamesessionID = gamesessionID,
                 player = players[0],
-                onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
-                onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) },
+                onPlusClick = { playerID ->
+                    viewModel.gainLife(
+                        gamesessionID,
+                        playerID = playerID
+                    )
+                },
+                onMinusClick = { playerID ->
+                    viewModel.loseLife(
+                        gamesessionID,
+                        playerID = playerID
+                    )
+                },
             )
             c++
             PlayerCard(
@@ -126,9 +159,20 @@ fun NewPlayerGrid(
                         }
                     ),
                 viewModel = viewModel,
+                gamesessionID = gamesessionID,
                 player = players[1],
-                onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
-                onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) }
+                onPlusClick = { playerID ->
+                    viewModel.gainLife(
+                        gamesessionID,
+                        playerID = playerID
+                    )
+                },
+                onMinusClick = { playerID ->
+                    viewModel.loseLife(
+                        gamesessionID,
+                        playerID = playerID
+                    )
+                }
             )
             c++
 
@@ -149,9 +193,20 @@ fun NewPlayerGrid(
                             }
                         ),
                     viewModel = viewModel,
+                    gamesessionID = gamesessionID,
                     player = players[i],
-                    onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
-                    onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) }
+                    onPlusClick = { playerID ->
+                        viewModel.gainLife(
+                            gamesessionID,
+                            playerID = playerID
+                        )
+                    },
+                    onMinusClick = { playerID ->
+                        viewModel.loseLife(
+                            gamesessionID,
+                            playerID = playerID
+                        )
+                    }
                 )
                 if (i + 1 <= n) {
                     PlayerCard(
@@ -165,18 +220,107 @@ fun NewPlayerGrid(
                                 }
                             ),
                         viewModel = viewModel,
+                        gamesessionID = gamesessionID,
                         player = players[i + 1],
-                        onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
-                        onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) }
+                        onPlusClick = { playerID ->
+                            viewModel.gainLife(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+                        },
+                        onMinusClick = { playerID ->
+                            viewModel.loseLife(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+                        }
                     )
                 }
 
             }
 
         }
-        MiddleBar(viewModel = viewModel)
+        MiddleBar(gamesessionID, viewModel = viewModel, navController = navController)
+    }
+}
+
+@Composable
+fun WinPlayerDialog(
+    optionList: List<Player>,
+    onDismissRequest: () -> Unit,
+    onConfirmation: (String) -> Unit,
+) {
+    var selected by remember {
+        mutableStateOf(false)
+    }
+    var selectedOption by remember {
+        mutableStateOf("")
     }
 
+    Dialog(
+        onDismissRequest = { onDismissRequest() }
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .height(420.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "Choose winning player",
+                Modifier.padding(12.dp)
+            )
+            LazyColumn {
+                items(optionList) { option ->
+                    Row {
+                        RadioButton(
+                            selected = selected,
+                            onClick = {
+                                selected = !selected
+                                selectedOption = option.id
+                            }
+                        )
+                        Text(text = option.name)
+                    }
+                }
+                item {
+                    Row {
+                        RadioButton(
+                            selected = selected,
+                            onClick = {
+                                selected = !selected
+                                selectedOption = "draw"
+                            }
+                        )
+                        Text(text = "draw")
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                TextButton(
+                    onClick = { onDismissRequest() },
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    Text("Dismiss")
+                }
+                TextButton(
+                    enabled = selectedOption.isNotEmpty(),
+                    onClick = {
+                        onConfirmation(selectedOption)
+                        onDismissRequest()
+                    },
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    Text("Confirm")
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -209,6 +353,7 @@ fun PlayerActionSheet(
 @Composable
 fun PlayerCard(
     modifier: Modifier,
+    gamesessionID: String,
     viewModel: PlayersViewModel,
     player: Player,
     onPlusClick: (String) -> Unit = {},
@@ -262,8 +407,18 @@ fun PlayerCard(
                         player = player,
                         playerID = player.id,
                         energy = energy,
-                        onEnergyPlusClick = { playerID -> viewModel.gainEnergy(playerID = playerID) },
-                        onEnergyMinusClick = { playerID -> viewModel.loseEnergy(playerID = playerID) }
+                        onEnergyPlusClick = { playerID ->
+                            viewModel.gainEnergy(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+                        },
+                        onEnergyMinusClick = { playerID ->
+                            viewModel.loseEnergy(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+                        }
                     )
                 }
 
@@ -272,8 +427,18 @@ fun PlayerCard(
                         player = player,
                         playerID = player.id,
                         energy = energy,
-                        onPoisonPlusClick = { playerName -> viewModel.gainPoison(playerID = playerName) },
-                        onPoisonMinusClick = { playerName -> viewModel.losePoison(playerID = playerName) }
+                        onPoisonPlusClick = { playerName ->
+                            viewModel.gainPoison(
+                                gamesessionID,
+                                playerID = playerName
+                            )
+                        },
+                        onPoisonMinusClick = { playerName ->
+                            viewModel.losePoison(
+                                gamesessionID,
+                                playerID = playerName
+                            )
+                        }
                     )
                 }
             }
@@ -607,7 +772,9 @@ fun AddPlayerDialog(
 
 @Composable
 fun MiddleBar(
-    viewModel: PlayersViewModel
+    gamesessionID: String,
+    viewModel: PlayersViewModel,
+    navController: NavController
 ) {
     OutlinedCard(
         elevation = CardDefaults.cardElevation(
@@ -622,10 +789,53 @@ fun MiddleBar(
         border = BorderStroke(1.dp, Color.Black)
     ) {
         Row {
-            AddPlayerIcon { name -> viewModel.addPlayer(player = Player(name = name)) }
+            AddPlayerIcon { name ->
+                viewModel.addPlayer(
+                    gamesessionID,
+                    playerName = name
+                )
+            }
             DieIcon(viewModel = viewModel)
             StartingLifeIcon(viewModel = viewModel)
+            EndGame(currentGameSession = viewModel.getByID(gamesessionID)!!) {
+                viewModel.add()
+                navController.navigate("${Screens.gamesessionscreen}/${gamesessionID}")
+            }
         }
+    }
+}
+
+@Composable
+fun EndGame(
+    currentGameSession: GameSession,
+    onEndGame: () -> Unit = {}
+) {
+    var dialogOpen by remember { mutableStateOf(false) }
+    Icon(
+        Icons.Outlined.CallEnd,
+        contentDescription = "no",
+        modifier = Modifier
+            .size(50.dp)
+            .padding(10.dp)
+            .clickable {
+                dialogOpen = true
+            },
+    )
+    if (dialogOpen) {
+        WinPlayerDialog(
+            optionList = currentGameSession.players.toList(),
+            onDismissRequest = { dialogOpen = false },
+            onConfirmation = { selectedPlayer ->
+                if (selectedPlayer != "draw") {
+                    val currentPlayer =
+                        currentGameSession.players.find { check -> check.id == selectedPlayer }!!
+                    currentPlayer.wins++
+
+                    currentGameSession.winner = currentPlayer
+                }
+                onEndGame()
+            }
+        )
     }
 }
 

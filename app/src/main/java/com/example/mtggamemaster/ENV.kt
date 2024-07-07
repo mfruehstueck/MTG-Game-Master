@@ -56,7 +56,7 @@ enum class Screens {
 enum class RoutArguments {
     deckID,
     cardID,
-    gameID
+    gamesessionID
 }
 
 enum class APIError(code: Int) {
