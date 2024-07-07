@@ -17,7 +17,7 @@ class PlayersViewModel(
 ) : ViewModel() {
     private val _players = MutableStateFlow<List<Player>>(mutableListOf())
     val players: StateFlow<List<Player>> = _players.asStateFlow()
-    fun gainLife(id: String) {
+    fun gainLife(playerID: String) {
 //        viewModelScope.launch {
 //            repository.getPlayers().distinctUntilChanged()
 //                .collect { playerList ->
@@ -33,7 +33,7 @@ class PlayersViewModel(
 
         _players.update { currentPlayers ->
             currentPlayers.map { player ->
-                if (player.id == id) {
+                if (player.id == playerID) {
                     player.copy(life = player.life + 1)
 //                    repository.updatePlayer(player)
                 } else {
@@ -44,10 +44,10 @@ class PlayersViewModel(
 //        var test = currentPlayers.find { checkPlayer -> checkPlayer.id == id }
     }
 
-    fun gainEnergy(id: String) {
+    fun gainEnergy(playerID: String) {
         _players.update { currentPlayers ->
             currentPlayers.map { player ->
-                if (player.id == id) {
+                if (player.id == playerID) {
                     player.copy(energy = player.energy + 1)
                 } else {
                     player
@@ -56,10 +56,34 @@ class PlayersViewModel(
         }
     }
 
-    fun loseLife(id: String) {
+    fun gainPoison(playerID: String) {
         _players.update { currentPlayers ->
             currentPlayers.map { player ->
-                if (player.id == id) {
+                if (player.id == playerID) {
+                    player.copy(poison = player.poison + 1)
+                } else {
+                    player
+                }
+            }
+        }
+    }
+
+    fun losePoison(playerID: String) {
+        _players.update { currentPlayers ->
+            currentPlayers.map { player ->
+                if (player.id == playerID) {
+                    player.copy(poison = player.poison - 1)
+                } else {
+                    player
+                }
+            }
+        }
+    }
+
+    fun loseLife(playerID: String) {
+        _players.update { currentPlayers ->
+            currentPlayers.map { player ->
+                if (player.id == playerID) {
                     player.copy(life = player.life - 1)
                 } else {
                     player
@@ -68,10 +92,10 @@ class PlayersViewModel(
         }
     }
 
-    fun loseEnergy(id: String) {
+    fun loseEnergy(playerID: String) {
         _players.update { currentPlayers ->
             currentPlayers.map { player ->
-                if (player.id == id) {
+                if (player.id == playerID) {
                     player.copy(energy = player.energy - 1)
                 } else {
                     player
@@ -87,6 +111,15 @@ class PlayersViewModel(
                 players + player
             }
         }
+    }
+
+    fun removePlayer(player: Player) {
+        _players.update { players ->
+            players - player
+        }
+    }
+    fun rollDie(): Int {
+        return (1..6).random()
     }
 
     init {

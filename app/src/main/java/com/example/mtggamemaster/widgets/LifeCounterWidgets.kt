@@ -2,9 +2,7 @@ package com.example.mtggamemaster.widgets
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,22 +16,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.AreaChart
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Dangerous
 import androidx.compose.material.icons.outlined.Dataset
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -44,37 +37,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.example.mtggamemaster.models.Player
-import com.example.mtggamemaster.viewmodels.PlayersViewModel
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.ViewModel
+import com.example.mtggamemaster.models.Player
+import com.example.mtggamemaster.viewmodels.player.PlayersViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -110,8 +93,8 @@ fun NewPlayerGrid(
                     ),
                 viewModel = viewModel,
                 player = players[0],
-                onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
-                onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
+                onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
+                onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) }
             )
             c++
         }
@@ -128,8 +111,8 @@ fun NewPlayerGrid(
                     ),
                 viewModel = viewModel,
                 player = players[0],
-                onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
-                onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) },
+                onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
+                onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) },
             )
             c++
             PlayerCard(
@@ -144,8 +127,8 @@ fun NewPlayerGrid(
                     ),
                 viewModel = viewModel,
                 player = players[1],
-                onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
-                onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
+                onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
+                onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) }
             )
             c++
 
@@ -167,8 +150,8 @@ fun NewPlayerGrid(
                         ),
                     viewModel = viewModel,
                     player = players[i],
-                    onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
-                    onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
+                    onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
+                    onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) }
                 )
                 if (i + 1 <= n) {
                     PlayerCard(
@@ -183,8 +166,8 @@ fun NewPlayerGrid(
                             ),
                         viewModel = viewModel,
                         player = players[i + 1],
-                        onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
-                        onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
+                        onPlusClick = { playerID -> viewModel.gainLife(playerID = playerID) },
+                        onMinusClick = { playerID -> viewModel.loseLife(playerID = playerID) }
                     )
                 }
 
@@ -267,7 +250,7 @@ fun PlayerCard(
                 1 -> {
                     LifeSection(
                         player = player,
-                        playerName = player.name,
+                        playerID = player.id,
                         life = life,
                         onPlusClick = onPlusClick,
                         onMinusClick = onMinusClick
@@ -277,20 +260,20 @@ fun PlayerCard(
                 2 -> {
                     EnergySection(
                         player = player,
-                        playerName = player.name,
+                        playerID = player.id,
                         energy = energy,
-                        onEnergyPlusClick = { playerName -> viewModel.gainEnergy(playerName = playerName) },
-                        onEnergyMinusClick = { playerName -> viewModel.loseEnergy(playerName = playerName) }
+                        onEnergyPlusClick = { playerID -> viewModel.gainEnergy(playerID = playerID) },
+                        onEnergyMinusClick = { playerID -> viewModel.loseEnergy(playerID = playerID) }
                     )
                 }
 
                 3 -> {
                     PoisonSection(
                         player = player,
-                        playerName = player.name,
+                        playerID = player.id,
                         energy = energy,
-                        onPoisonPlusClick = { playerName -> viewModel.gainPoison(playerName = playerName) },
-                        onPoisonMinusClick = { playerName -> viewModel.losePoison(playerName = playerName) }
+                        onPoisonPlusClick = { playerName -> viewModel.gainPoison(playerID = playerName) },
+                        onPoisonMinusClick = { playerName -> viewModel.losePoison(playerID = playerName) }
                     )
                 }
             }
@@ -376,7 +359,7 @@ fun SymbolSelection(
 @Composable
 fun LifeSection(
     player: Player,
-    playerName: String,
+    playerID: String,
     life: Int,
     onPlusClick: (String) -> Unit = {},
     onMinusClick: (String) -> Unit = {}
@@ -398,7 +381,7 @@ fun LifeSection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onPlusClick(playerName)
+                        onPlusClick(playerID)
                     },
             )
             Text(
@@ -413,7 +396,7 @@ fun LifeSection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onMinusClick(playerName)
+                        onMinusClick(playerID)
                     }
             )
         }
@@ -424,7 +407,7 @@ fun LifeSection(
 @Composable
 fun EnergySection(
     player: Player,
-    playerName: String,
+    playerID: String,
     energy: Int,
     onEnergyPlusClick: (String) -> Unit = {},
     onEnergyMinusClick: (String) -> Unit = {}
@@ -446,7 +429,7 @@ fun EnergySection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onEnergyPlusClick(playerName)
+                        onEnergyPlusClick(playerID)
                     },
             )
             Text(
@@ -461,7 +444,7 @@ fun EnergySection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onEnergyMinusClick(playerName)
+                        onEnergyMinusClick(playerID)
                     }
             )
         }
@@ -472,7 +455,7 @@ fun EnergySection(
 @Composable
 fun PoisonSection(
     player: Player,
-    playerName: String,
+    playerID: String,
     energy: Int,
     onPoisonPlusClick: (String) -> Unit = {},
     onPoisonMinusClick: (String) -> Unit = {}
@@ -494,7 +477,7 @@ fun PoisonSection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onPoisonPlusClick(playerName)
+                        onPoisonPlusClick(playerID)
                     },
             )
             Text(
@@ -509,7 +492,7 @@ fun PoisonSection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onPoisonMinusClick(playerName)
+                        onPoisonMinusClick(playerID)
                     }
             )
         }
