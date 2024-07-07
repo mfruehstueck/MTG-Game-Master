@@ -34,7 +34,49 @@ fun GameSessionScreen(gamesessionID: String, navController: NavController) {
                         gamesessionID = currentGameSession.id,
                         viewModel = viewModel,
                         modifier = Modifier.padding(innerPadding),
-                        navController = navController
+                        navController = navController,
+                        onLifePlus = { playerID ->
+                            viewModel.gainLife(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+//                            navController.navigate("${Screens.gamesessionscreen}/${TempDatabase.gamesessions.last().id}")
+                        },
+                        onLifeMinus = { playerID ->
+                            viewModel.loseLife(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+//                            navController.navigate("${Screens.gamesessionscreen}/${TempDatabase.gamesessions.last().id}")
+                        },
+                        onEnergyPlus = { playerID ->
+                            viewModel.gainEnergy(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+//                            navController.navigate("${Screens.gamesessionscreen}/${TempDatabase.gamesessions.last().id}")
+                        },
+                        onEnergyMinus = { playerID ->
+                            viewModel.loseEnergy(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+//                            navController.navigate("${Screens.gamesessionscreen}/${TempDatabase.gamesessions.last().id}")
+                        },
+                        onPoisonPlus = { playerID ->
+                            viewModel.gainPoison(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+//                            navController.navigate("${Screens.gamesessionscreen}/${TempDatabase.gamesessions.last().id}")
+                        },
+                        onPoisonMinus = { playerID ->
+                            viewModel.losePoison(
+                                gamesessionID,
+                                playerID = playerID
+                            )
+//                            navController.navigate("${Screens.gamesessionscreen}/${TempDatabase.gamesessions.last().id}")
+                        }
                     )
                 }
             )

@@ -24,13 +24,14 @@ import com.example.mtggamemaster.viewmodels.card.CardViewModel
 fun SearchWidget(
     innerPadding: PaddingValues
 ) {
+    CardViewModel.defaultFilter()
+
     Column(
         modifier = Modifier
             .padding(innerPadding)
             .verticalScroll(rememberScrollState())
     ) {
         val lableWidth = 150.dp
-
 
         CardViewModel.currentFilter.name(
             simpleInputField(

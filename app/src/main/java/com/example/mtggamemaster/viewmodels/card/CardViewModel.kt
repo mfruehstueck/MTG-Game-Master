@@ -19,6 +19,11 @@ class CardViewModel(
         private var _cardList = MutableStateFlow(emptyList<Card>())
         var currentFilter = CardFilter()
             .set("unf")
+
+        fun defaultFilter() {
+            CardViewModel.currentFilter = CardFilter()
+                .set("unf")
+        }
     }
 
     val cardList: StateFlow<List<Card>> = _cardList.asStateFlow()

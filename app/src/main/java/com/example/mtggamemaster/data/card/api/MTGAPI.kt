@@ -5,6 +5,7 @@ import com.example.mtggamemaster.models.card.Card
 import com.example.mtggamemaster.models.card.Set
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -23,8 +24,8 @@ class MTGAPI {
     companion object {
         private val client = OkHttpClient()
 
-        fun queryCards(url: String, handleResponse: (List<Card>) -> Unit = {}) {
-            httpRequest(url) { resp ->
+        fun queryCards(url: String, handleResponse: (List<Card>, Headers) -> Unit = { _: List<Card>, _: Headers -> }) {
+            httpRequest(url) { resp, headers ->
                 val jsonArray = JSONObject(resp).getJSONArray("cards")
                 val cards = mutableListOf<Card>()
 
@@ -37,14 +38,17 @@ class MTGAPI {
                     }
                 }
 
-                handleResponse(cards.toList())
+                handleResponse(cards.toList(), headers)
             }
         }
 
         fun querySets(url: String, handleResponse: (String) -> Unit = {}) {
         }
 
-        private fun httpRequest(url: String, handleResponse: (String) -> Unit = {}) {
+        private fun httpRequest(
+            url: String,
+            handleResponse: (String, Headers) -> Unit = { _: String, _: Headers -> }
+        ) {
             val request = Request.Builder()
                 .url(url)
                 .build()
@@ -62,7 +66,7 @@ class MTGAPI {
                     response.use {
                         if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-                        handleResponse(response.body!!.string())
+                        handleResponse(response.body!!.string(), response.headers)
                     }
                 }
             })

@@ -49,6 +49,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -64,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.mtggamemaster.Screens
+import com.example.mtggamemaster.data.card.TempDatabase
 import com.example.mtggamemaster.models.GameSession
 import com.example.mtggamemaster.models.Player
 import com.example.mtggamemaster.viewmodels.player.PlayersViewModel
@@ -74,7 +76,13 @@ fun NewPlayerGrid(
     gamesessionID: String,
     viewModel: PlayersViewModel,
     modifier: Modifier,
-    navController: NavController
+    navController: NavController,
+    onLifePlus: (String) -> Unit = {},
+    onLifeMinus: (String) -> Unit = {},
+    onEnergyPlus: (String) -> Unit = {},
+    onEnergyMinus: (String) -> Unit = {},
+    onPoisonPlus: (String) -> Unit = {},
+    onPoisonMinus: (String) -> Unit = {}
 ) {
     val players by viewModel.players.collectAsState()
     var contextMenuPlayer by rememberSaveable {
@@ -105,18 +113,24 @@ fun NewPlayerGrid(
                 viewModel = viewModel,
                 gamesessionID = gamesessionID,
                 player = players[0],
-                onPlusClick = { playerID ->
-                    viewModel.gainLife(
-                        gamesessionID,
-                        playerID = playerID
-                    )
+                onLifePlus = { playerID ->
+                    onLifePlus(playerID)
+//                    viewModel.gainLife(
+//                        gamesessionID,
+//                        playerID = playerID
+//                    )
                 },
-                onMinusClick = { playerID ->
-                    viewModel.loseLife(
-                        gamesessionID,
-                        playerID = playerID
-                    )
-                }
+                onLifeMinus = { playerID ->
+                    onLifeMinus(playerID)
+//                    viewModel.loseLife(
+//                        gamesessionID,
+//                        playerID = playerID
+//                    )
+                },
+                onEnergyPlus = { playerID -> onEnergyPlus(playerID) },
+                onEnergyMinus = { playerID -> onEnergyMinus(playerID) },
+                onPoisonPlus = { playerID -> onPoisonPlus(playerID) },
+                onPoisonMinus = { playerID -> onPoisonMinus(playerID) }
             )
             c++
         }
@@ -134,18 +148,24 @@ fun NewPlayerGrid(
                 viewModel = viewModel,
                 gamesessionID = gamesessionID,
                 player = players[0],
-                onPlusClick = { playerID ->
-                    viewModel.gainLife(
-                        gamesessionID,
-                        playerID = playerID
-                    )
+                onLifePlus = { playerID ->
+                    onLifePlus(playerID)
+//                    viewModel.gainLife(
+//                        gamesessionID,
+//                        playerID = playerID
+//                    )
                 },
-                onMinusClick = { playerID ->
-                    viewModel.loseLife(
-                        gamesessionID,
-                        playerID = playerID
-                    )
+                onLifeMinus = { playerID ->
+                    onLifeMinus(playerID)
+//                    viewModel.loseLife(
+//                        gamesessionID,
+//                        playerID = playerID
+//                    )
                 },
+                onEnergyPlus = { playerID -> onEnergyPlus(playerID) },
+                onEnergyMinus = { playerID -> onEnergyMinus(playerID) },
+                onPoisonPlus = { playerID -> onPoisonPlus(playerID) },
+                onPoisonMinus = { playerID -> onPoisonMinus(playerID) }
             )
             c++
             PlayerCard(
@@ -161,18 +181,24 @@ fun NewPlayerGrid(
                 viewModel = viewModel,
                 gamesessionID = gamesessionID,
                 player = players[1],
-                onPlusClick = { playerID ->
-                    viewModel.gainLife(
-                        gamesessionID,
-                        playerID = playerID
-                    )
+                onLifePlus = { playerID ->
+                    onLifePlus(playerID)
+//                    viewModel.gainLife(
+//                        gamesessionID,
+//                        playerID = playerID
+//                    )
                 },
-                onMinusClick = { playerID ->
-                    viewModel.loseLife(
-                        gamesessionID,
-                        playerID = playerID
-                    )
-                }
+                onLifeMinus = { playerID ->
+                    onLifeMinus(playerID)
+//                    viewModel.loseLife(
+//                        gamesessionID,
+//                        playerID = playerID
+//                    )
+                },
+                onEnergyPlus = { playerID -> onEnergyPlus(playerID) },
+                onEnergyMinus = { playerID -> onEnergyMinus(playerID) },
+                onPoisonPlus = { playerID -> onPoisonPlus(playerID) },
+                onPoisonMinus = { playerID -> onPoisonMinus(playerID) }
             )
             c++
 
@@ -195,18 +221,24 @@ fun NewPlayerGrid(
                     viewModel = viewModel,
                     gamesessionID = gamesessionID,
                     player = players[i],
-                    onPlusClick = { playerID ->
-                        viewModel.gainLife(
-                            gamesessionID,
-                            playerID = playerID
-                        )
+                    onLifePlus = { playerID ->
+                        onLifePlus(playerID)
+//                        viewModel.gainLife(
+//                            gamesessionID,
+//                            playerID = playerID
+//                        )
                     },
-                    onMinusClick = { playerID ->
-                        viewModel.loseLife(
-                            gamesessionID,
-                            playerID = playerID
-                        )
-                    }
+                    onLifeMinus = { playerID ->
+                        onLifeMinus(playerID)
+//                        viewModel.loseLife(
+//                            gamesessionID,
+//                            playerID = playerID
+//                        )
+                    },
+                    onEnergyPlus = { playerID -> onEnergyPlus(playerID) },
+                    onEnergyMinus = { playerID -> onEnergyMinus(playerID) },
+                    onPoisonPlus = { playerID -> onPoisonPlus(playerID) },
+                    onPoisonMinus = { playerID -> onPoisonMinus(playerID) }
                 )
                 if (i + 1 <= n) {
                     PlayerCard(
@@ -222,25 +254,49 @@ fun NewPlayerGrid(
                         viewModel = viewModel,
                         gamesessionID = gamesessionID,
                         player = players[i + 1],
-                        onPlusClick = { playerID ->
-                            viewModel.gainLife(
-                                gamesessionID,
-                                playerID = playerID
-                            )
+                        onLifePlus = { playerID ->
+                            onLifePlus(playerID)
+//                            viewModel.gainLife(
+//                                gamesessionID,
+//                                playerID = playerID
+//                            )
                         },
-                        onMinusClick = { playerID ->
-                            viewModel.loseLife(
-                                gamesessionID,
-                                playerID = playerID
-                            )
-                        }
+                        onLifeMinus = { playerID ->
+                            onLifeMinus(playerID)
+//                            viewModel.loseLife(
+//                                gamesessionID,
+//                                playerID = playerID
+//                            )
+                        },
+                        onEnergyPlus = { playerID -> onEnergyPlus(playerID) },
+                        onEnergyMinus = { playerID -> onEnergyMinus(playerID) },
+                        onPoisonPlus = { playerID -> onPoisonPlus(playerID) },
+                        onPoisonMinus = { playerID -> onPoisonMinus(playerID) }
                     )
                 }
 
             }
 
         }
-        MiddleBar(gamesessionID, viewModel = viewModel, navController = navController)
+        val onUserAddError = remember { mutableStateOf(false) }
+
+        MiddleBar(
+            gamesessionID,
+            viewModel = viewModel,
+            navController = navController,
+            onUserAddError = { error ->
+                onUserAddError.value = error
+                if (!error) navController.navigate("${Screens.gamesessionscreen}/${TempDatabase.gamesessions.last().id}")
+            }
+        )
+
+        if (onUserAddError.value) {
+            Alert(
+                title = "Warning",
+                text = "User already in Session",
+                shouldShowDialog = onUserAddError
+            )
+        }
     }
 }
 
@@ -331,7 +387,6 @@ fun WinPlayerDialog(
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerActionSheet(
@@ -365,17 +420,15 @@ fun PlayerCard(
     gamesessionID: String,
     viewModel: PlayersViewModel,
     player: Player,
-    onPlusClick: (String) -> Unit = {},
-    onMinusClick: (String) -> Unit = {},
+    onLifePlus: (String) -> Unit = {},
+    onLifeMinus: (String) -> Unit = {},
+    onEnergyPlus: (String) -> Unit = {},
+    onEnergyMinus: (String) -> Unit = {},
+    onPoisonPlus: (String) -> Unit = {},
+    onPoisonMinus: (String) -> Unit = {}
 ) {
     var selectedSymbol by remember {
-        mutableStateOf(1)
-    }
-    var life by remember {
-        mutableStateOf(player.life)
-    }
-    var energy by remember {
-        mutableStateOf(player.energy)
+        mutableIntStateOf(1)
     }
     OutlinedCard(
         elevation = CardDefaults.cardElevation(
@@ -406,9 +459,9 @@ fun PlayerCard(
                     LifeSection(
                         player = player,
                         playerID = player.id,
-                        life = life,
-                        onPlusClick = onPlusClick,
-                        onMinusClick = onMinusClick
+                        life = player.life,
+                        onPlusClick = { playerID -> onLifePlus(playerID) },
+                        onMinusClick = { playerID -> onLifeMinus(playerID) }
                     )
                 }
 
@@ -416,18 +469,20 @@ fun PlayerCard(
                     EnergySection(
                         player = player,
                         playerID = player.id,
-                        energy = energy,
+                        energy = player.energy,
                         onEnergyPlusClick = { playerID ->
-                            viewModel.gainEnergy(
-                                gamesessionID,
-                                playerID = playerID
-                            )
+                            onEnergyPlus(playerID)
+//                            viewModel.gainEnergy(
+//                                gamesessionID,
+//                                playerID = playerID
+//                            )
                         },
                         onEnergyMinusClick = { playerID ->
-                            viewModel.loseEnergy(
-                                gamesessionID,
-                                playerID = playerID
-                            )
+                            onEnergyMinus(playerID)
+//                            viewModel.loseEnergy(
+//                                gamesessionID,
+//                                playerID = playerID
+//                            )
                         }
                     )
                 }
@@ -436,18 +491,20 @@ fun PlayerCard(
                     PoisonSection(
                         player = player,
                         playerID = player.id,
-                        energy = energy,
-                        onPoisonPlusClick = { playerName ->
-                            viewModel.gainPoison(
-                                gamesessionID,
-                                playerID = playerName
-                            )
+                        poison = player.poison,
+                        onPoisonPlusClick = { playerID ->
+                            onPoisonPlus(playerID)
+//                            viewModel.gainPoison(
+//                                gamesessionID,
+//                                playerID = playerName
+//                            )
                         },
-                        onPoisonMinusClick = { playerName ->
-                            viewModel.losePoison(
-                                gamesessionID,
-                                playerID = playerName
-                            )
+                        onPoisonMinusClick = { playerID ->
+                            onPoisonMinus(playerID)
+//                            viewModel.losePoison(
+//                                gamesessionID,
+//                                playerID = playerName
+//                            )
                         }
                     )
                 }
@@ -539,6 +596,10 @@ fun LifeSection(
     onPlusClick: (String) -> Unit = {},
     onMinusClick: (String) -> Unit = {}
 ) {
+    var lifeState by remember {
+        mutableIntStateOf(life)
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -557,10 +618,12 @@ fun LifeSection(
                     .padding(10.dp)
                     .clickable {
                         onPlusClick(playerID)
+                        lifeState++
                     },
             )
             Text(
-                text = player.life.toString(),
+//                text = player.life.toString(),
+                text = lifeState.toString(),
                 fontSize = 70.sp,
                 textAlign = TextAlign.Center,
             )
@@ -572,6 +635,7 @@ fun LifeSection(
                     .padding(10.dp)
                     .clickable {
                         onMinusClick(playerID)
+                        lifeState--
                     }
             )
         }
@@ -587,6 +651,10 @@ fun EnergySection(
     onEnergyPlusClick: (String) -> Unit = {},
     onEnergyMinusClick: (String) -> Unit = {}
 ) {
+    var energyState by remember {
+        mutableIntStateOf(energy)
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -605,10 +673,11 @@ fun EnergySection(
                     .padding(10.dp)
                     .clickable {
                         onEnergyPlusClick(playerID)
+                        energyState++
                     },
             )
             Text(
-                text = player.energy.toString(),
+                text = energyState.toString(),
                 fontSize = 70.sp,
                 textAlign = TextAlign.Center,
             )
@@ -620,6 +689,7 @@ fun EnergySection(
                     .padding(10.dp)
                     .clickable {
                         onEnergyMinusClick(playerID)
+                        energyState--
                     }
             )
         }
@@ -631,10 +701,14 @@ fun EnergySection(
 fun PoisonSection(
     player: Player,
     playerID: String,
-    energy: Int,
+    poison: Int,
     onPoisonPlusClick: (String) -> Unit = {},
     onPoisonMinusClick: (String) -> Unit = {}
 ) {
+    var poisonState by remember {
+        mutableIntStateOf(poison)
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -653,10 +727,11 @@ fun PoisonSection(
                     .padding(10.dp)
                     .clickable {
                         onPoisonPlusClick(playerID)
+                        poisonState++
                     },
             )
             Text(
-                text = player.poison.toString(),
+                text = poisonState.toString(),
                 fontSize = 70.sp,
                 textAlign = TextAlign.Center,
             )
@@ -668,6 +743,7 @@ fun PoisonSection(
                     .padding(10.dp)
                     .clickable {
                         onPoisonMinusClick(playerID)
+                        poisonState--
                     }
             )
         }
@@ -784,7 +860,8 @@ fun AddPlayerDialog(
 fun MiddleBar(
     gamesessionID: String,
     viewModel: PlayersViewModel,
-    navController: NavController
+    navController: NavController,
+    onUserAddError: (Boolean) -> Unit = {}
 ) {
     OutlinedCard(
         elevation = CardDefaults.cardElevation(
@@ -797,16 +874,18 @@ fun MiddleBar(
     ) {
         Row {
             AddPlayerIcon { name ->
-                viewModel.addPlayer(
-                    gamesessionID,
-                    playerName = name
+                onUserAddError(
+                    viewModel.addPlayer(
+                        gamesessionID,
+                        playerName = name
+                    )
                 )
             }
             DieIcon(viewModel = viewModel)
             StartingLifeIcon(
                 viewModel = viewModel,
-                onConfirmation = {
-                    life -> viewModel.setStartingLife(gamesessionID, life)
+                onConfirmation = { life ->
+                    viewModel.setStartingLife(gamesessionID, life)
                     navController.navigate("${Screens.gamesessionscreen}/${gamesessionID}")
                 }
             )
