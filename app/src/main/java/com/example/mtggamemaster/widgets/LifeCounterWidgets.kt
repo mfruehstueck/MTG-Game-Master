@@ -1,8 +1,12 @@
 package com.example.mtggamemaster.widgets
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,197 +17,208 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.AreaChart
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.Dangerous
+import androidx.compose.material.icons.outlined.Dataset
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.mtggamemaster.models.Player
+import com.example.mtggamemaster.viewmodels.PlayersViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.mtggamemaster.models.Player
-import com.example.mtggamemaster.viewmodels.player.PlayersViewModel
+import androidx.lifecycle.ViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PlayerGrid(
+fun NewPlayerGrid(
     viewModel: PlayersViewModel,
     modifier: Modifier
 ) {
     val players by viewModel.players.collectAsState()
-    when(players.size) {
-        1 -> Grid1Player(viewModel = viewModel, players = players)
-        2 -> Grid2Players(viewModel = viewModel, players = players)
-        3 -> Grid3Players(viewModel = viewModel, players = players)
-        4 -> Grid4Players(viewModel = viewModel, players = players)
+    var contextMenuPlayer by rememberSaveable {
+        mutableStateOf<Player?>(null)
     }
-    /*
-        Column {
-            LazyColumn {
-                items(players) { player ->
-                    PlayerCard(
-                        modifier = modifier,
-                        viewModel = viewModel,
-                        player = player,
-                        onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName)},
-                        onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName)}
-                    )
-                }
-            }
+    if (contextMenuPlayer != null) {
+        PlayerActionSheet(
+            player = contextMenuPlayer!!,
+            onDismissSheet = { contextMenuPlayer = null },
+            onDeleteClick = { player -> viewModel.removePlayer(player) }
+        )
+    }
+    Column() {
+        val n = players.size
+        var c = 0
+        if (n % 2 != 0) {
+            PlayerCard(
+                modifier = Modifier
+                    .padding(3.dp)
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .combinedClickable(
+                        onClick = {},
+                        onLongClick = {
+                            contextMenuPlayer = players[0]
+                        }
+                    ),
+                viewModel = viewModel,
+                player = players[0],
+                onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
+                onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
+            )
+            c++
         }
-    */
-
-
-}
-
-@Composable
-fun Grid1Player(
-    viewModel: PlayersViewModel,
-    players: List<Player>
-) {
-    Column(
-    ) {
-        PlayerCard(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(8.dp),
-            viewModel = viewModel,
-            player = players[0],
-            onPlusClick = { playerID -> viewModel.gainLife(id = playerID)},
-            onMinusClick = { playerID -> viewModel.loseLife(id = playerID)}
-        )
-    }
-}
-@Composable
-fun Grid2Players(
-    viewModel: PlayersViewModel,
-    players: List<Player>
-) {
-    Column(
-    ) {
-        PlayerCard(
-            modifier = Modifier
-                .fillMaxHeight(0.5f)
-                .padding(8.dp),
-            viewModel = viewModel,
-            player = players[0],
-            onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-            onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
-        )
-        PlayerCard(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(8.dp),
-            viewModel = viewModel,
-            player = players[1],
-            onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-            onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
-        )
-    }
-}
-
-@Composable
-fun Grid3Players(
-    viewModel: PlayersViewModel,
-    players: List<Player>
-) {
-    Column {
-        PlayerCard(
-            modifier = Modifier
-                .fillMaxHeight(0.5f)
-                .padding(8.dp),
-            viewModel = viewModel, player = players[0],
-            onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-            onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
-        )
-        Row {
-            PlayerCard(modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .padding(8.dp, 0.dp, 4.dp, 8.dp),
+        if (n == 2) {
+            PlayerCard(
+                modifier = Modifier
+                    .padding(3.dp)
+                    .weight(1f)
+                    .combinedClickable(
+                        onClick = {},
+                        onLongClick = {
+                            contextMenuPlayer = players[0]
+                        }
+                    ),
+                viewModel = viewModel,
+                player = players[0],
+                onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
+                onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) },
+            )
+            c++
+            PlayerCard(
+                modifier = Modifier
+                    .padding(3.dp)
+                    .weight(1f)
+                    .combinedClickable(
+                        onClick = {},
+                        onLongClick = {
+                            contextMenuPlayer = players[1]
+                        }
+                    ),
                 viewModel = viewModel,
                 player = players[1],
-                onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-                onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
+                onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
+                onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
             )
-            PlayerCard(modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp, 0.dp, 8.dp, 8.dp),
-                viewModel = viewModel,
-                player = players[2],
-                onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-                onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
-            )
+            c++
+
         }
+        for (i in c..<n step 2) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                PlayerCard(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .weight(1f)
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = {
+                                contextMenuPlayer = players[i]
+                            }
+                        ),
+                    viewModel = viewModel,
+                    player = players[i],
+                    onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
+                    onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
+                )
+                if (i + 1 <= n) {
+                    PlayerCard(
+                        modifier = Modifier
+                            .padding(3.dp)
+                            .weight(1f)
+                            .combinedClickable(
+                                onClick = {},
+                                onLongClick = {
+                                    contextMenuPlayer = players[i + 1]
+                                }
+                            ),
+                        viewModel = viewModel,
+                        player = players[i + 1],
+                        onPlusClick = { playerName -> viewModel.gainLife(playerName = playerName) },
+                        onMinusClick = { playerName -> viewModel.loseLife(playerName = playerName) }
+                    )
+                }
+
+            }
+
+        }
+        MiddleBar(viewModel = viewModel)
     }
+
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Grid4Players(
-    viewModel: PlayersViewModel,
-    players: List<Player>
+fun PlayerActionSheet(
+    player: Player,
+    onDismissSheet: () -> Unit,
+    onDeleteClick: (Player) -> Unit
 ) {
-    Column {
-        Row {
-            PlayerCard(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .fillMaxHeight(0.5f)
-                    .padding(8.dp, 8.dp, 4.dp, 8.dp),
-                viewModel = viewModel, player = players[0],
-                onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-                onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
-            )
-            PlayerCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.5f)
-                    .padding(4.dp, 8.dp, 8.dp, 8.dp),
-                viewModel = viewModel, player = players[1],
-                onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-                onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
-            )
-        }
-
-        Row {
-            PlayerCard(modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .padding(8.dp, 0.dp, 4.dp, 8.dp),
-                viewModel = viewModel,
-                player = players[2],
-                onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-                onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
-            )
-            PlayerCard(modifier = Modifier
+    ModalBottomSheet(onDismissRequest = onDismissSheet) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
                 .fillMaxWidth()
-                .padding(4.dp, 0.dp, 8.dp, 8.dp),
-                viewModel = viewModel,
-                player = players[3],
-                onPlusClick = { playerName -> viewModel.gainLife(id = playerName)},
-                onMinusClick = { playerName -> viewModel.loseLife(id = playerName)}
+                .height(100.dp)
+                .clickable {
+                    onDeleteClick(player)
+                    onDismissSheet()
+                }
+        ) {
+            Icon(
+                Icons.Outlined.Delete,
+                contentDescription = "Delete Player",
             )
+            Text(text = "Delete ${player.name}?")
         }
     }
 }
@@ -214,7 +229,7 @@ fun PlayerCard(
     viewModel: PlayersViewModel,
     player: Player,
     onPlusClick: (String) -> Unit = {},
-    onMinusClick: (String) -> Unit = {}
+    onMinusClick: (String) -> Unit = {},
 ) {
     var selectedSymbol by remember {
         mutableStateOf(1)
@@ -248,27 +263,35 @@ fun PlayerCard(
                     .padding(16.dp),
                 textAlign = TextAlign.Center,
             )
-            when(selectedSymbol) {
+            when (selectedSymbol) {
                 1 -> {
                     LifeSection(
                         player = player,
-                        playerID = player.id,
+                        playerName = player.name,
                         life = life,
                         onPlusClick = onPlusClick,
                         onMinusClick = onMinusClick
                     )
                 }
+
                 2 -> {
                     EnergySection(
                         player = player,
-                        playerID = player.id,
+                        playerName = player.name,
                         energy = energy,
-                        onEnergyPlusClick = { playerID -> viewModel.gainEnergy(id = playerID) },
-                        onEnergyMinusClick = { playerID -> viewModel.loseEnergy(id = playerID) }
+                        onEnergyPlusClick = { playerName -> viewModel.gainEnergy(playerName = playerName) },
+                        onEnergyMinusClick = { playerName -> viewModel.loseEnergy(playerName = playerName) }
                     )
                 }
-                3 -> {
 
+                3 -> {
+                    PoisonSection(
+                        player = player,
+                        playerName = player.name,
+                        energy = energy,
+                        onPoisonPlusClick = { playerName -> viewModel.gainPoison(playerName = playerName) },
+                        onPoisonMinusClick = { playerName -> viewModel.losePoison(playerName = playerName) }
+                    )
                 }
             }
 
@@ -302,7 +325,7 @@ fun SymbolSelection(
                 )
                 .clip(RoundedCornerShape(100.dp))
                 .clickable { onSymbolSelected(1) }
-                .size(48.dp),
+                .weight(1f),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -319,12 +342,12 @@ fun SymbolSelection(
                 )
                 .clip(RoundedCornerShape(100.dp))
                 .clickable { onSymbolSelected(2) }
-                .size(48.dp),
+                .weight(1f),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 Icons.Outlined.Bolt,
-                contentDescription = "Life",
+                contentDescription = "Energy",
             )
         }
         Box(
@@ -338,12 +361,12 @@ fun SymbolSelection(
                 .clickable(
                     onClick = { onSymbolSelected(3) },
                 )
-                .size(48.dp),
+                .weight(1f),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                Icons.Outlined.Accessibility,
-                contentDescription = "Life",
+                Icons.Outlined.Dangerous,
+                contentDescription = "Poison",
             )
         }
     }
@@ -353,7 +376,7 @@ fun SymbolSelection(
 @Composable
 fun LifeSection(
     player: Player,
-    playerID: String,
+    playerName: String,
     life: Int,
     onPlusClick: (String) -> Unit = {},
     onMinusClick: (String) -> Unit = {}
@@ -364,7 +387,7 @@ fun LifeSection(
         Text(
             text = "Life",
             textAlign = TextAlign.Center,
-            )
+        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -375,7 +398,7 @@ fun LifeSection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onPlusClick(playerID)
+                        onPlusClick(playerName)
                     },
             )
             Text(
@@ -390,18 +413,18 @@ fun LifeSection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onMinusClick(playerID)
+                        onMinusClick(playerName)
                     }
             )
         }
     }
-    
+
 }
 
 @Composable
 fun EnergySection(
     player: Player,
-    playerID: String,
+    playerName: String,
     energy: Int,
     onEnergyPlusClick: (String) -> Unit = {},
     onEnergyMinusClick: (String) -> Unit = {}
@@ -411,7 +434,8 @@ fun EnergySection(
     ) {
         Text(
             text = "Energy",
-            textAlign = TextAlign.Center,)
+            textAlign = TextAlign.Center,
+        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -422,7 +446,7 @@ fun EnergySection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onEnergyPlusClick(playerID)
+                        onEnergyPlusClick(playerName)
                     },
             )
             Text(
@@ -437,37 +461,60 @@ fun EnergySection(
                     .size(50.dp)
                     .padding(10.dp)
                     .clickable {
-                        onEnergyMinusClick(playerID)
+                        onEnergyMinusClick(playerName)
                     }
             )
         }
     }
-    
+
 }
 
 @Composable
-fun AddPlayerCard(
-    onAddClick: (String) -> Unit = {},
+fun PoisonSection(
+    player: Player,
+    playerName: String,
+    energy: Int,
+    onPoisonPlusClick: (String) -> Unit = {},
+    onPoisonMinusClick: (String) -> Unit = {}
 ) {
-    OutlinedCard(
-        modifier = Modifier
-            .size(200.dp, 200.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        border = BorderStroke(1.dp, Color.Black),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Add Player",
-            modifier = Modifier
-                .padding(16.dp),
+            text = "Poison",
             textAlign = TextAlign.Center,
         )
-        Icon(
-            Icons.Outlined.Add,
-            contentDescription = "no"
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                Icons.Outlined.KeyboardArrowUp,
+                contentDescription = "no",
+                modifier = Modifier
+                    .size(50.dp)
+                    .padding(10.dp)
+                    .clickable {
+                        onPoisonPlusClick(playerName)
+                    },
+            )
+            Text(
+                text = player.poison.toString(),
+                fontSize = 70.sp,
+                textAlign = TextAlign.Center,
+            )
+            Icon(
+                Icons.Rounded.KeyboardArrowDown,
+                contentDescription = "no",
+                modifier = Modifier
+                    .size(50.dp)
+                    .padding(10.dp)
+                    .clickable {
+                        onPoisonMinusClick(playerName)
+                    }
+            )
+        }
     }
+
 }
 
 @Composable
@@ -479,7 +526,28 @@ fun AddPlayerActionButton(
         Icon(Icons.Default.Add, contentDescription = "Add")
         Text(text = "Add Player")
     }
-    if(dialogOpen) {
+    if (dialogOpen) {
+        AddPlayerDialog(
+            onDismissRequest = { dialogOpen = false },
+            onConfirmation = onConfirmation
+        )
+    }
+}
+
+@Composable
+fun AddPlayerIcon(
+    onConfirmation: (String) -> Unit = {}
+) {
+    var dialogOpen by remember { mutableStateOf(false) }
+    Icon(
+        Icons.Outlined.Add,
+        contentDescription = "no",
+        modifier = Modifier
+            .size(50.dp)
+            .padding(10.dp)
+            .clickable { dialogOpen = true }
+    )
+    if (dialogOpen) {
         AddPlayerDialog(
             onDismissRequest = { dialogOpen = false },
             onConfirmation = onConfirmation
@@ -494,7 +562,7 @@ fun AddPlayerDialog(
 ) {
     var text by remember { mutableStateOf("") }
     var isEnabled by remember { mutableStateOf(false) }
-    if(text != "") {
+    if (text != "") {
         isEnabled = true
     } else {
         isEnabled = false
@@ -509,9 +577,9 @@ fun AddPlayerDialog(
                 .height(250.dp)
                 .padding(16.dp),
 
-        ) {
+            ) {
             Text(
-                text = "Enter the player's name or choose an existing player:",
+                text = "Enter the player's name:",
                 Modifier.padding(12.dp)
             )
             Column(
@@ -524,7 +592,8 @@ fun AddPlayerDialog(
                     modifier = Modifier.padding(12.dp),
                     value = text,
                     onValueChange = { text = it },
-                    label = { Text("New Player") }
+                    label = { Text("New Player") },
+                    singleLine = true
                 )
                 Row(
                     modifier = Modifier
@@ -542,12 +611,148 @@ fun AddPlayerDialog(
                         onClick = {
                             onConfirmation(text)
                             onDismissRequest()
-                                  },
+                        },
                         modifier = Modifier.padding(8.dp),
                     ) {
                         Text("Confirm")
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun MiddleBar(
+    viewModel: PlayersViewModel
+) {
+    OutlinedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 12.dp
+        ),
+        modifier = Modifier
+            .padding(3.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        border = BorderStroke(1.dp, Color.Black)
+    ) {
+        Row {
+            AddPlayerIcon { name -> viewModel.addPlayer(player = Player(name = name)) }
+            DieIcon(viewModel = viewModel)
+            StartingLifeIcon(viewModel = viewModel)
+        }
+    }
+}
+
+@Composable
+fun StartingLifeIcon(
+    viewModel: PlayersViewModel
+) {
+    var dialogOpen by remember { mutableStateOf(false) }
+    Icon(
+        Icons.Outlined.Favorite,
+        contentDescription = "no",
+        modifier = Modifier
+            .size(50.dp)
+            .padding(10.dp)
+            .clickable { dialogOpen = true }
+    )
+    if (dialogOpen) {
+        StartingLifeDialog(
+            onDismissRequest = { dialogOpen = false }
+        )
+    }
+}
+
+@Composable
+fun DieIcon(
+    viewModel: PlayersViewModel
+) {
+    var dialogOpen by remember { mutableStateOf(false) }
+    Icon(
+        Icons.Outlined.Dataset,
+        contentDescription = "no",
+        modifier = Modifier
+            .size(50.dp)
+            .padding(10.dp)
+            .clickable { dialogOpen = true }
+    )
+    if (dialogOpen) {
+        DieRollDialog(
+            onDismissRequest = { dialogOpen = false },
+            rolledNumber = viewModel.rollDie()
+        )
+    }
+}
+
+@Composable
+fun DieRollDialog(
+    onDismissRequest: () -> Unit,
+    rolledNumber: Int
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .padding(16.dp),
+
+            ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = "You rolled a $rolledNumber!",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun StartingLifeDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: (String) -> Unit = {}
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(16.dp),
+
+            ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = "Select starting life",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize(Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+                var text by remember {
+                    mutableStateOf("")
+                }
+                TextField(
+                    modifier = Modifier.padding(12.dp),
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("Starting Life") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true
+                )
+
             }
         }
     }

@@ -11,7 +11,9 @@ import com.example.mtggamemaster.models.Player
 import com.example.mtggamemaster.viewmodels.player.PlayerViewModelFactory
 import com.example.mtggamemaster.viewmodels.player.PlayersViewModel
 import com.example.mtggamemaster.widgets.AddPlayerActionButton
-import com.example.mtggamemaster.widgets.PlayerGrid
+import com.example.mtggamemaster.widgets.MiddleBar
+import com.example.mtggamemaster.widgets.NewPlayerGrid
+import com.example.mtggamemaster.widgets.PlayerCard
 
 @Composable
 fun GameSessionScreen(navController: NavController) {
@@ -25,17 +27,8 @@ fun GameSessionScreen(navController: NavController) {
         content = { innerPadding ->
             Scaffold(
                 modifier = Modifier.padding(innerPadding),
-                floatingActionButton = {
-                    AddPlayerActionButton(onConfirmation = { name ->
-                        viewModel.addPlayer(
-                            player = Player(
-                                name = name
-                            )
-                        )
-                    })
-                },
                 content = { innerPadding ->
-                    PlayerGrid(
+                    NewPlayerGrid(
                         viewModel = viewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
