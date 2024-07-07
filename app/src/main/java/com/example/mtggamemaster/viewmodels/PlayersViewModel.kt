@@ -34,6 +34,17 @@ class PlayersViewModel : ViewModel() {
             }
         }
     }
+    fun gainPoison(playerName: String) {
+        _players.update { currentPlayers ->
+            currentPlayers.map { player ->
+                if (player.name == playerName) {
+                    player.copy(poison = player.poison + 1)
+                } else {
+                    player
+                }
+            }
+        }
+    }
     fun loseLife(playerName: String) {
         _players.update { currentPlayers ->
             currentPlayers.map { player ->
@@ -50,6 +61,17 @@ class PlayersViewModel : ViewModel() {
             currentPlayers.map { player ->
                 if (player.name == playerName) {
                     player.copy(energy = player.energy - 1)
+                } else {
+                    player
+                }
+            }
+        }
+    }
+    fun losePoison(playerName: String) {
+        _players.update { currentPlayers ->
+            currentPlayers.map { player ->
+                if (player.name == playerName) {
+                    player.copy(poison = player.poison - 1)
                 } else {
                     player
                 }

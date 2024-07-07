@@ -27,7 +27,6 @@ import com.example.mtggamemaster.widgets.AddPlayerActionButton
 import com.example.mtggamemaster.widgets.MiddleBar
 import com.example.mtggamemaster.widgets.NewPlayerGrid
 import com.example.mtggamemaster.widgets.PlayerCard
-import com.example.mtggamemaster.widgets.PlayerGrid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
