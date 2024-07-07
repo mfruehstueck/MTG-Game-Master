@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -51,6 +52,9 @@ fun CardWidget(
     card: Card,
     navController: NavController,
 
+    isRemoveable: Boolean = false,
+
+    onRemoveClick: (String) -> Unit = {},
     onFavoriteClick: (String) -> Unit = {},
     onAddToDeckClick: (String) -> Unit = {},
     onCardClick: (String) -> Unit = {}
@@ -82,27 +86,31 @@ fun CardWidget(
                     contentDescription = card.name,
                     placeholder = painterResource(R.drawable.card_placeholder)
                 )
-                IconButton(onClick = {
-                    onFavoriteClick(card.id!!)
-                    isFavorite = !isFavorite
-                }) {
-                    Icon(
-                        modifier = Modifier.padding(8.dp),
-                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Like!"
-                    )
+                Column {
+                    IconButton(onClick = {
+                        onFavoriteClick(card.id!!)
+                        isFavorite = !isFavorite
+                    }) {
+                        Icon(
+                            modifier = Modifier.padding(2.dp),
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            tint = Color.Magenta,
+                            contentDescription = "Like!"
+                        )
+                    }
+                    if (isRemoveable) {
+                        IconButton(onClick = {
+                            onRemoveClick(card.id!!)
+                        }) {
+                            Icon(
+                                modifier = Modifier.padding(2.dp),
+                                imageVector = Icons.Default.Remove,
+                                tint = Color.Red,
+                                contentDescription = "Remove from deck"
+                            )
+                        }
+                    }
                 }
-//                IconButton(
-//                    modifier = Modifier
-//                        .padding(start = 0.dp, top = 160.dp, end = 8.dp, bottom = 0.dp),
-//                    onClick = { /*TODO*/ }) {
-//                    Icon(
-//                        modifier = Modifier
-//                            .size(64.dp),
-//                        imageVector = Icons.Default.Add,
-//                        contentDescription = "Add to deck"
-//                    )
-//                }
             }
 
         }
@@ -265,7 +273,10 @@ fun CardWidgetGrid(
     cardList: List<Card>,
     navController: NavController,
 
+    isRemoveable: Boolean = false,
+
     onFavoriteClick: (String) -> Unit = {},
+    onRemoveClick: (String) -> Unit = {},
 
     innerPadding: PaddingValues
 ) {
@@ -288,8 +299,13 @@ fun CardWidgetGrid(
                 card = card,
                 navController = navController,
 
+                isRemoveable = isRemoveable,
+
                 onFavoriteClick = { cardID ->
                     onFavoriteClick(cardID)
+                },
+                onRemoveClick = { cardID ->
+                    onRemoveClick(cardID)
                 }
             ) { cardID ->
                 navController.navigate("${Screens.carddetailscreen}/$cardID")

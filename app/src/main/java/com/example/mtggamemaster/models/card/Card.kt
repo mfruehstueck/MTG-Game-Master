@@ -54,6 +54,42 @@ data class Card(
 
     var isFavorite: Boolean = false
 ) {
+    fun update(card: Card) {
+        this.name = card.name
+        this.layout = card.layout
+        this.cmc = card.cmc
+        this.colors = card.colors
+        this.colorIdentity = card.colorIdentity
+        this.type = card.type
+        this.supertypes = card.supertypes
+        this.types = card.types
+        this.subtypes = card.subtypes
+        this.rarity = card.rarity
+        this.set = card.set
+        this.setName = card.setName
+        this.text = card.text
+        this.flavor = card.flavor
+        this.artist = card.artist
+        this.number = card.number
+        this.power = card.power
+        this.toughness = card.toughness
+        this.loyality = card.loyality
+        this.multiverseid = card.multiverseid
+
+        this.names = card.names
+        this.manaCost = card.manaCost
+        this.variations = card.variations
+        this.imageUrl = card.imageUrl
+        this.watermark = card.watermark
+        this.releaseDate = card.releaseDate
+        this.rulings = card.rulings
+        this.printings = card.printings
+        this.originalText = card.originalText
+        this.originalType = card.originalType
+        this.legalities = card.legalities
+        this.id = card.id
+    }
+
     companion object {
         var cnt: Int = 0
     }
@@ -100,35 +136,15 @@ data class Card(
         name = json.getString("name"),
         layout = json.getString("layout"),
         cmc = json.getInt("cmc"),
-//        colors = json.getJSONArray("colors").toString().split(","),
-//        colorIdentity = json.getJSONArray("colorIdentity").toString().split(","),
         type = json.getString("type"),
-//        supertypes = json.getJSONArray("supertypes").toString().split(","),
         types = json.getJSONArray("types").toString().split(","),
-//        subtypes = json.getJSONArray("subtypes").toString().split(","),
         rarity = json.getString("rarity"),
         set = json.getString("set"),
         setName = json.getString("setName"),
         text = json.getString("text"),
-//        flavor = json.getString("flavor"),
         artist = json.getString("artist"),
         number = json.getString("number"),
-//        power = json.getString("power"),
-//        toughness = json.getString("toughness"),
-//        loyality = json.getString("loyality"),
-//        multiverseid = json.getString("multiverseid"),
-
-//        names = json.getJSONArray("names").toString().split(","),
-//        manaCost = json.getString("manaCost"),
-//        variations = json.getJSONArray("variations").toString().split(","),
-//        imageUrl = json.getString("imageUrl").replace("https", "http").replace("http", "https"),
-//        watermark = json.getString("watermark"),
-//        releaseDate = json.getString("releaseDate"),
-//        rulings = emptyMap(),
         printings = json.getJSONArray("printings").toString().split(","),
-//        originalText = json.getString("originalText"),
-//        originalType = json.getString("originalType"),
-//        legalities = emptyMap(),
         id = json.getString("id")
     ) {
         this.colors = try {

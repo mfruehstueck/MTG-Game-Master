@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mtggamemaster.Screens
-import com.example.mtggamemaster.data.deck.DeckRepository
+import com.example.mtggamemaster.data.card.MTGRepository
 import com.example.mtggamemaster.screens.BaseScreen
 import com.example.mtggamemaster.viewmodels.deck.DeckViewModel
 import com.example.mtggamemaster.viewmodels.deck.DeckViewModelFactory
@@ -17,7 +17,7 @@ import com.example.mtggamemaster.widgets.SimpleFloatingActionButton
 
 @Composable
 fun DeckScreen(/*action: String, */navController: NavController) {
-    val repository = DeckRepository()
+    val repository = MTGRepository()
     val factory = DeckViewModelFactory(repository = repository)
     val viewmodel: DeckViewModel = viewModel(factory = factory)
 
@@ -38,6 +38,7 @@ fun DeckScreen(/*action: String, */navController: NavController) {
 
                     onFavoriteClick = { deckID ->
                         toggleFavorite(deckID)
+                        navController.navigate("${Screens.deckscreen}")
                     },
                     onDeleteClick = { deckID ->
                         viewmodel.delete(deckID)

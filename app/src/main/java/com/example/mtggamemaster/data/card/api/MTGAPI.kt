@@ -1,5 +1,6 @@
 package com.example.mtggamemaster.data.card.api
 
+import android.util.Log
 import com.example.mtggamemaster.models.card.Card
 import com.example.mtggamemaster.models.card.Set
 import okhttp3.Call
@@ -54,12 +55,16 @@ class MTGAPI {
                 }
 
                 override fun onResponse(call: Call, response: Response) {
+                    Log.i("", "pagesize = ${response.headers["Page-Size"]}")
+                    Log.i("", "count = ${response.headers["Count"]}")
+                    Log.i("", "totalcount = ${response.headers["Total-Count"]}")
+                    Log.i("", "requestsleft = ${response.headers["Ratelimit-Remaining"]}")
                     response.use {
                         if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-                        for ((name, value) in response.headers) {
-                            println("$name: $value")
-                        }
+//                        for ((name, value) in response.headers) {
+//                            println("$name: $value")
+//                        }
 
                         handleResponse(response.body!!.string())
                     }
@@ -75,7 +80,7 @@ class MTGAPI {
                     name = "Narset, Enlightened Master",
                     layout = "normal",
                     cmc = 6,
-                    colors = listOf("R", "U", "W"),
+                    colors = listOf("Red", "Blue", "White"),
                     colorIdentity = listOf("R", "U", "W"),
                     type = "Legendary Creature — Human Monk",
                     supertypes = listOf("Legendary"),
@@ -143,7 +148,7 @@ class MTGAPI {
                         name = "Card $i",
                         layout = "normal",
                         cmc = 1,
-                        colors = listOf("W", "B"),
+                        colors = listOf("White", "Blue"),
                         colorIdentity = listOf("W", "B"),
                         type = "Supertype $i Type $i - Subtype $i",
                         supertypes = listOf("Supertype $i"),

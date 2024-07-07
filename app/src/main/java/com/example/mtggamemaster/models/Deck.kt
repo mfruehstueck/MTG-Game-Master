@@ -5,7 +5,7 @@ import com.example.mtggamemaster.models.card.Card
 data class Deck(
     var id: String,
     var name: String,
-    var cardList: List<Card>,
+    var cardList: MutableList<Card>,
     var isFavorite: Boolean = false
 ) {
     fun update(deck: Deck) {
@@ -15,10 +15,8 @@ data class Deck(
     }
 
     companion object {
-        var cnt: Int = 0
+        private var cnt: Int = 0
     }
 
-    constructor() : this(id = "0", name = "", cardList = emptyList(), isFavorite = false) {
-        cnt++
-    }
+    constructor() : this(id = "${cnt++}", name = "", cardList = mutableListOf(), isFavorite = false)
 }

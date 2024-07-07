@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mtggamemaster.Screens
-import com.example.mtggamemaster.data.deck.DeckRepository
+import com.example.mtggamemaster.data.card.MTGRepository
 import com.example.mtggamemaster.models.Deck
 import com.example.mtggamemaster.screens.BaseScreen
 import com.example.mtggamemaster.viewmodels.deck.DeckViewModel
@@ -22,7 +22,7 @@ import com.example.mtggamemaster.widgets.SimpleFloatingActionButton
 
 @Composable
 fun DeckEditScreen(deckID: String, navController: NavController) {
-    val repository = DeckRepository()
+    val repository = MTGRepository()
     val factory = DeckViewModelFactory(repository = repository)
     val viewmodel: DeckViewModel = viewModel(factory = factory)
 
@@ -53,9 +53,6 @@ fun DeckEditScreen(deckID: String, navController: NavController) {
             Column(
                 modifier = Modifier.padding(innerPadding)
             ) {
-                Text(text = "${Screens.deckeditscreen} not implemented yet")
-                Text("deckID is $deckID")
-
                 DeckEditWidget(deck = curr, navController = navController)
             }
         }

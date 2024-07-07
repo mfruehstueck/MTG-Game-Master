@@ -2,10 +2,10 @@ package com.example.mtggamemaster.viewmodels.card
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.mtggamemaster.data.card.CardRepository
+import com.example.mtggamemaster.data.card.MTGRepository
 
 @Suppress("UNCHECKED_CAST")
-class CardViewModelFactory(private val repository: CardRepository) : ViewModelProvider.Factory {
+class CardViewModelFactory(private val repository: MTGRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(CardViewModel::class.java)) {
             return CardViewModel(repository = repository) as T

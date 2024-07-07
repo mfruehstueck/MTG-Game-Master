@@ -1,5 +1,6 @@
 package com.example.mtggamemaster.screens
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,10 +14,11 @@ fun HomeScreen(navController: NavController) {
         title = "Home",
         navController = navController,
         content = { innerPadding ->
-            Text(
-                modifier = Modifier.padding(innerPadding),
-                text = "${Screens.homescreen} not implemented yet"
-            )
+            Column(
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                Text(text = "${Screens.homescreen} not implemented yet")
+            }
         }
     )
 }

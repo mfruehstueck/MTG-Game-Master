@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mtggamemaster.Screens
-import com.example.mtggamemaster.data.card.CardRepository
+import com.example.mtggamemaster.data.card.MTGRepository
 import com.example.mtggamemaster.screens.BaseScreen
 import com.example.mtggamemaster.viewmodels.card.CardViewModel
 import com.example.mtggamemaster.viewmodels.card.CardViewModelFactory
@@ -19,13 +19,9 @@ import com.example.mtggamemaster.widgets.CardWidgetGrid
 
 @Composable
 fun CardScreen(navController: NavController) {
-    val repository = CardRepository()
+    val repository = MTGRepository()
     val factory = CardViewModelFactory(repository = repository)
     val viewModel: CardViewModel = viewModel(factory = factory)
-
-    fun toggleFavorite(cardID: String) {
-        viewModel.toggleFavorite(cardID)
-    }
 
     BaseScreen(
         title = "Cards",
@@ -39,7 +35,7 @@ fun CardScreen(navController: NavController) {
                     navController = navController,
 
                     onFavoriteClick = { cardID ->
-                        toggleFavorite(cardID)
+                        viewModel.toggleFavorite(cardID)
                     },
 
                     innerPadding = innerPadding

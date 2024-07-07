@@ -1,14 +1,25 @@
 package com.example.mtggamemaster.viewmodels.card
 
 import androidx.lifecycle.ViewModel
-import com.example.mtggamemaster.data.card.CardRepository
-import com.example.mtggamemaster.models.card.Card
-import kotlinx.coroutines.flow.MutableStateFlow
+import androidx.lifecycle.viewModelScope
+import com.example.mtggamemaster.data.card.MTGRepository
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
 class CardDetailViewModel(
-    private val repository: CardRepository
+    private val repository: MTGRepository
 ):ViewModel() {
-    private val _currentMovie = MutableStateFlow(Card())
+//    private val _currentMovie = repository.card_getByID(cardID)
 
-    fun getCardByID(id: String) = repository.getByID(id)
+    fun toggleFavorite(cardID: String) {
+        viewModelScope.launch {
+            val foundCard = repository.card_getByID(cardID).firstOrNull()
+            foundCard?.let {
+                it.isFavorite = !it.isFavorite
+                repository.card_update(it)
+            }
+        }
+    }
+
+    fun getCardByID(id: String) = repository.card_getByID(id)
 }
