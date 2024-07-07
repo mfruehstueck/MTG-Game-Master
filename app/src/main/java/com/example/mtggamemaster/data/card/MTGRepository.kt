@@ -9,6 +9,7 @@ import com.example.mtggamemaster.models.card.CardFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 
 class MTGRepository(/*private val cardDAO: CardDAO*/) {
 
@@ -143,8 +144,20 @@ class MTGRepository(/*private val cardDAO: CardDAO*/) {
         val foundGamesession = TempDatabase.gamesessions.find { check ->
             check.id == gamesessionID
         } ?: return
-
+        player.life = foundGamesession.startingLife
         foundGamesession.players.add(player)
+    }
+    fun gamesession_setStartingLife(gamesessionID: String, life: Int) {
+        val foundGamesession = TempDatabase.gamesessions.find { check ->
+            check.id == gamesessionID
+        } ?: return
+
+        val players = foundGamesession.players
+        for (player in players) {
+            player.update(Player(id = player.id, name = player.name, life = life))
+        }
+
+        foundGamesession.setStartingLif(life)
     }
 
     fun gamesession_getPlayerByID(gamesessionID: String, playerID: String): Flow<Player?> {
