@@ -83,7 +83,7 @@ fun SimpleBottomAppBar(navController: NavController) {
         var selected =
 
             NavigationBarItem(
-                selected = true,
+                selected = false,
                 onClick = {
                     navController.navigate("${Screens.homescreen}")
                 },

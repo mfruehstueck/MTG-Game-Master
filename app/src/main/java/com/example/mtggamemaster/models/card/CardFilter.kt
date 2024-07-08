@@ -84,9 +84,17 @@ class CardFilter {
         }
 
         if (firstLetter.toString().isNotEmpty()) {
+
             if (checked) {
-                this.colors.add(firstLetter.toString())
-            } else this.colors.remove(firstLetter)
+                if (this.colors.find { str -> str == firstLetter.toString() } == null) {
+                    this.colors.add(firstLetter.toString())
+                }
+            } else {
+                if (this.colors.find { str -> str == firstLetter.toString() } != null) {
+                    this.colors.remove(firstLetter.toString())
+                }
+            }
+
         } else this.colors = mutableListOf(
             "W",
             "U",

@@ -53,29 +53,9 @@ fun HomeScreen(navController: NavController) {
                     players.addAll(gamesession.players)
                 }
 
-//                LazyColumn {
-//                    item {
-//                        PlayerStatRow(
-//                            modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 4.dp),
-//                            id = "ID",
-//                            name = "Name",
-//                            wins = "Wins",
-//                            losses = "Losses"
-//                        )
-//                    }
-//                    items(players.toList()) { player ->
-//                        PlayerStatRow(
-//                            modifier = Modifier.padding(0.dp, 2.dp),
-//                            id = player.id,
-//                            name = player.name,
-//                            wins = player.wins.toString(),
-//                            losses = player.losses.toString()
-//                        )
-//                    }
-//                }
                 PlayerStatistics(
                     listOf("ID", "Name", "Wins", "Losses"),
-                    players.toList()
+                    players.toList().sortedByDescending { player -> player.wins }
                 )
             }
         }

@@ -9,7 +9,6 @@ import com.example.mtggamemaster.models.card.CardFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
 
 class MTGRepository(/*private val cardDAO: CardDAO*/) {
 
@@ -29,7 +28,16 @@ class MTGRepository(/*private val cardDAO: CardDAO*/) {
 
     fun card_init(handleResponse: () -> Unit = {}) {
         if (TempDatabase.cards.size <= 5) {
-            MTGAPI.queryCards("https://api.magicthegathering.io/v1/cards?set=UNF") { queriedCards ->
+            var total: Int
+            var current: Int
+
+            var counter: Int = 0
+
+//            while (counter < )
+            MTGAPI.queryCards("https://api.magicthegathering.io/v1/cards?set=UNF&page=1") { queriedCards, headers ->
+                total = headers["Total-Count"]?.toInt() ?: 0
+                current = headers["Count"]?.toInt() ?: 0
+
                 queriedCards.forEach { queriedCard ->
                     card_add(queriedCard)
                 }
@@ -140,13 +148,19 @@ class MTGRepository(/*private val cardDAO: CardDAO*/) {
     fun gamesession_getByID(gamesessionID: String): Flow<GameSession?> =
         flowOf(TempDatabase.gamesessions.find { check -> check.id == gamesessionID })
 
-    fun gamesession_addPlayer(gamesessionID: String, player: Player) {
+    //N: returns error, so true means something went wrong
+    fun gamesession_addPlayer(gamesessionID: String, player: Player): Boolean {
         val foundGamesession = TempDatabase.gamesessions.find { check ->
             check.id == gamesessionID
-        } ?: return
+        } ?: return true
         player.life = foundGamesession.startingLife
-        foundGamesession.players.add(player)
+
+        return if (!foundGamesession.players.contains(player)) {
+            foundGamesession.players.add(player)
+            false
+        } else true
     }
+
     fun gamesession_setStartingLife(gamesessionID: String, life: Int) {
         val foundGamesession = TempDatabase.gamesessions.find { check ->
             check.id == gamesessionID

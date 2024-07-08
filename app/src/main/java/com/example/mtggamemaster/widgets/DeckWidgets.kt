@@ -189,50 +189,52 @@ fun AddToDeckDialog(
     Dialog(
         onDismissRequest = { onDismissRequest() }
     ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .height(420.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = "Choose deck to add card to",
-                Modifier.padding(12.dp)
-            )
-            LazyColumn {
-                items(optionList) { option ->
-                    Row {
-                        Checkbox(
-                            checked = selectedOptions.contains(option),
-                            onCheckedChange = { checked ->
-                                if (checked) selectedOptions.add(option)
-                                else selectedOptions.remove(option)
-                            })
-                        Text(text = option.name)
+        Card {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .height(420.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = "Choose deck to add card to",
+                    Modifier.padding(12.dp)
+                )
+                LazyColumn {
+                    items(optionList) { option ->
+                        Row {
+                            Checkbox(
+                                checked = selectedOptions.contains(option),
+                                onCheckedChange = { checked ->
+                                    if (checked) selectedOptions.add(option)
+                                    else selectedOptions.remove(option)
+                                })
+                            Text(text = option.name)
+                        }
                     }
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                TextButton(
-                    onClick = { onDismissRequest() },
-                    modifier = Modifier.padding(8.dp),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
                 ) {
-                    Text("Dismiss")
-                }
-                TextButton(
-                    enabled = selectedOptions.isNotEmpty(),
-                    onClick = {
-                        onConfirmation(selectedOptions)
-                        onDismissRequest()
-                    },
-                    modifier = Modifier.padding(8.dp),
-                ) {
-                    Text("Confirm")
+                    TextButton(
+                        onClick = { onDismissRequest() },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Dismiss")
+                    }
+                    TextButton(
+                        enabled = selectedOptions.isNotEmpty(),
+                        onClick = {
+                            onConfirmation(selectedOptions)
+                            onDismissRequest()
+                        },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Confirm")
+                    }
                 }
             }
         }

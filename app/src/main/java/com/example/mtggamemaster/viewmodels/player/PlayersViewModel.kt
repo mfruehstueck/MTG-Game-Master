@@ -169,9 +169,10 @@ class PlayersViewModel(
         }
     }
 
-    fun addPlayer(gamesessionID: String, playerName: String) {
+    fun addPlayer(gamesessionID: String, playerName: String): Boolean {
         var player: Player? = null
         val life = getByID(gamesessionID)!!.startingLife
+        var error = false
 
         viewModelScope.launch {
             repository.getPlayers().collect { players ->
@@ -180,11 +181,11 @@ class PlayersViewModel(
                     player = Player(name = playerName)
                 }
             }
-            repository.gamesession_addPlayer(gamesessionID, player!!)
-            _players.update { players ->
-                players + player!!
-            }
         }
+
+        error = repository.gamesession_addPlayer(gamesessionID, player!!)
+
+        return error
     }
 
     fun removePlayer(gamesessionID: String, player: Player) {
