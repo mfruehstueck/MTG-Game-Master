@@ -438,7 +438,7 @@ fun PlayerCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
-        border = BorderStroke(1.dp, Color.Black)
+        border = BorderStroke(1.dp, Color.LightGray)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -870,9 +870,12 @@ fun MiddleBar(
         modifier = Modifier
             .padding(3.dp)
             .fillMaxWidth(),
-        border = BorderStroke(1.dp, Color.Black)
+        border = BorderStroke(1.dp, Color.LightGray)
     ) {
-        Row {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             AddPlayerIcon { name ->
                 onUserAddError(
                     viewModel.addPlayer(
